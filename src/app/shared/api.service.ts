@@ -11,7 +11,7 @@ export class ApiService {
   private apiSecret = 'ZsEketBVyBEjtScGBtG3x6XDjxFrwKjJVRtyB38hQZ';  // Your API Secret
   private baseUrl = 'http://api.velocityweather.com/v1/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Function to generate the signature
   private signRequest(url: string): string {
@@ -30,11 +30,11 @@ export class ApiService {
     return `${url}${queryChar}sig=${modifiedSignature}&ts=${timestamp}`;
   }
 
-  // Method to fetch weather data with dynamic signature
-  getWeatherData(): Observable<any> {
-    const endpoint = `${this.apiKey}/reports/metar/all.json?page=1`;
-    const signedUrl = this.signRequest(`${this.baseUrl}${endpoint}`);
-    console.log(signedUrl)
+  // Method to fetch weather data with dynamic signature and coordinates
+  getWeatherData(lat: number, lon: number): Observable<any> {
+    const timestamp = Math.floor(Date.now() / 1000).toString();  // Current timestamp
+    const endpoint = `${this.apiKey}/reports/metar/nearest.json`;
+    const signedUrl = this.signRequest(`${this.baseUrl}${endpoint}?lat=${lat}&lon=${lon}&within_radius=500&max_age=360&from=${timestamp}`);
     return this.http.get<any>(signedUrl);
   }
 }
