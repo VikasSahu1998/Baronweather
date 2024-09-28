@@ -118,9 +118,23 @@ export class BaronweatherComponent {
     };
     const overlayMaps = {};
 
-    L.control.layers(baseMaps, overlayMaps, { position: 'topleft' }).addTo(this.map);
+     // Create and add watermark control
+     const WatermarkControl = L.Control.extend({
+      onAdd: function () {
+        const img = L.DomUtil.create('img');
+        img.src = 'https://www.cognitivenavigation.com/wp-content/uploads/2024/03/cropped-C_Name.png'; // Replace with your watermark image URL
+        img.style.width = '100px';
+        img.style.opacity = '1'; // Adjust transparency
+        img.style.display = 'block';
+        return img;
+      }
+    });
+    // Add the watermark control to the map
+    new WatermarkControl({ position: 'topleft' }).addTo(this.map);
+
+    L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(this.map);
     streets.addTo(this.map);
-    L.control.scale({ position: 'bottomleft', metric: false }).addTo(this.map);
+    // L.control.scale({ position: 'bottomright', metric: false }).addTo(this.map);
     L.control.zoom({ position: 'topright' }).addTo(this.map);
 
     // Event to capture the map view change
