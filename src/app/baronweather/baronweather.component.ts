@@ -82,7 +82,7 @@ export class BaronweatherComponent {
   constructor(private weatherService: ApiService) { }
 
   private initMap(): void {
-    this.map = L.map('map', { zoomControl: false }).setView([20.5937, 78.9629], 4);
+    this.map = L.map('map', { zoomControl: false, attributionControl: false  }).setView([20.5937, 78.9629], 4);
 
     const streets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
@@ -130,12 +130,12 @@ export class BaronweatherComponent {
       }
     });
     // Add the watermark control to the map
-    new WatermarkControl({ position: 'topleft' }).addTo(this.map);
+    new WatermarkControl({ position: 'bottomright' }).addTo(this.map);
 
     L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(this.map);
     streets.addTo(this.map);
     // L.control.scale({ position: 'bottomright', metric: false }).addTo(this.map);
-    L.control.zoom({ position: 'topright' }).addTo(this.map);
+    L.control.zoom({ position: 'topleft' }).addTo(this.map);
 
     // Event to capture the map view change
     this.map.on('moveend', () => {

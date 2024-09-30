@@ -1,4 +1,13 @@
 #map {
     height: 100%;
   }
-  
+
+/* Floating menu styles */
+.floating-menu-control {
+  position: absolute; /* Position it relative to the map */
+  top: 60px; /* Distance from the top */
+  right: 2px; /* Distance from the right */
+  border-radius: 5px;
+  padding: 10px;
+  z-index: 1000; /* Ensure it's on top of the map */
+}

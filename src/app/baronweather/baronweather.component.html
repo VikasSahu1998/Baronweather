@@ -1,17 +1,15 @@
 <div id="map" style="height: 100vh;"></div>
-<!-- <div *ngIf="weatherData && weatherData.length > 0">
-  <h2>Weather Information</h2>
-  <div *ngFor="let weather of weatherData">
-    <h3>{{ weather.station?.name }} ({{ weather.station?.id }})</h3>
-    <p><strong>Temperature:</strong> {{ weather.temperature?.value }}°{{ weather.temperature?.units }}</p>
-    <p *ngIf="weather.temperature?.dew_point !== undefined"><strong>Dew Point:</strong> {{ weather.temperature.dew_point }}°{{ weather.temperature?.units }}</p>
-    <p><strong>Humidity:</strong> {{ weather.relative_humidity?.value }}{{ weather.relative_humidity?.units }}</p>
-    <p><strong>Pressure:</strong> {{ weather.pressure?.sea_level }} {{ weather.pressure?.units }}</p>
-    <p *ngIf="weather.wind"><strong>Wind:</strong> {{ weather.wind?.speed }} {{ weather.wind?.speed_units }} (Direction: {{ weather.wind?.dir }}°)</p>
-    <p><strong>Issue Time:</strong> {{ weather.issuetime | date: 'yyyy-MM-dd HH:mm:ss' }}</p>
-    <hr />
+<!-- Floating Menu -->
+
+<div class="floating-menu-control position-fixed" >
+  <div class="dropdown">
+    <button class="btn btn-light" type="button" id="menuButton" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-list"></i>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="menuButton">
+      <li><a class="dropdown-item" href="#" >Metar</a></li>
+      <li><a class="dropdown-item" href="#">Item 2</a></li>
+      <li><a class="dropdown-item" href="#">Item 3</a></li>
+    </ul>
   </div>
 </div>
-<div *ngIf="weatherData && weatherData.length === 0">
-  <p>No weather data available.</p>
-</div> -->
