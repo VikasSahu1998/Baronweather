@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import * as L from 'leaflet';
 import { ApiService } from '../shared/api.service';
 import { CommonModule } from '@angular/common';
-
+ 
 @Component({
   selector: 'app-baronweather',
   standalone: true,
@@ -13,7 +13,11 @@ import { CommonModule } from '@angular/common';
 export class BaronweatherComponent {
   private map: any;
   public weatherData: any[] = [];
-
+  public isMetarVisible = false; // Public property to track visibility
+ 
+  private markers: L.Marker[] = []; // Store markers to manage their visibility
+ 
+ 
   private weatherIconMap: { [key: string]: string } = {
     "9000": "velocityweather_icons/condition-9000-large-day.png", // Clear
     "9001": "velocityweather_icons/condition-9001-large-day.png", // Sunny
@@ -75,19 +79,19 @@ export class BaronweatherComponent {
     "9201": "velocityweather_icons/condition-9201-large-day.png", // Thunderstorms and Frozen Precipitation
     "9999": "velocityweather_icons/condition-9999-large-day.png", // Unknown
   };
-
+ 
   // A fallback icon for unknown weather conditions
   private fallbackIcon = "velocityweather_icons/condition-9999-large-day.png"; // Default icon for unknown conditions
-
+ 
   constructor(private weatherService: ApiService) { }
-
+ 
   private initMap(): void {
     this.map = L.map('map', { zoomControl: false, attributionControl: false  }).setView([20.5937, 78.9629], 4);
-
+ 
     const streets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
     });
-
+ 
     const darkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {});
     const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {});
     const navigation = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
@@ -106,7 +110,7 @@ export class BaronweatherComponent {
       maxZoom: 20,
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
     });
-
+ 
     const baseMaps = {
       'Streets': streets,
       'Satellite': satellite,
@@ -117,7 +121,7 @@ export class BaronweatherComponent {
       'Dark': darkMatter
     };
     const overlayMaps = {};
-
+ 
      // Create and add watermark control
      const WatermarkControl = L.Control.extend({
       onAdd: function () {
@@ -131,25 +135,49 @@ export class BaronweatherComponent {
     });
     // Add the watermark control to the map
     new WatermarkControl({ position: 'bottomright' }).addTo(this.map);
-
+ 
     L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(this.map);
     streets.addTo(this.map);
     // L.control.scale({ position: 'bottomright', metric: false }).addTo(this.map);
     L.control.zoom({ position: 'topleft' }).addTo(this.map);
-
-    // Event to capture the map view change
-    this.map.on('moveend', () => {
-      const center = this.map.getCenter();
-      this.fetchWeatherData(center.lat, center.lng); // Fetch weather data based on current center
-    });
+ 
+   // Event to capture the map view change
+   this.map.on('moveend', () => {
+    const center = this.map.getCenter();
+    if (this.isMetarVisible) { // Only fetch if METAR is visible
+      this.fetchWeatherData(center.lat, center.lng);
+    }
+  });
   }
-
+ 
   ngAfterViewInit(): void {
     this.initMap();
+  
     const initialCenter = this.map.getCenter();
-    this.fetchWeatherData(initialCenter.lat, initialCenter.lng); // Initial fetch
+    if (this.isMetarVisible) { // Initial fetch if METAR is visible
+      this.fetchWeatherData(initialCenter.lat, initialCenter.lng);
+    }
   }
-
+    // New method to toggle METAR visibility
+    public toggleMetarDisplay(): void {
+      this.isMetarVisible = !this.isMetarVisible; // Toggle the flag
+      if (this.isMetarVisible) {
+        const center = this.map.getCenter();
+        this.fetchWeatherData(center.lat, center.lng); // Fetch weather data when turning on
+      } else {
+        this.removeWeatherMarkers(); // Clear markers when turning off
+      }
+    }
+ 
+    private removeWeatherMarkers(): void {
+      // Remove all existing weather markers
+      this.map.eachLayer((layer: any) => {
+        if (layer instanceof L.Marker) {
+          this.map.removeLayer(layer);
+        }
+      });
+      this.weatherData = []; // Clear the weather data array
+    }
   private fetchWeatherData(lat: number, lon: number): void {
     this.weatherService.getWeatherData(lat, lon).subscribe(
       (data: any) => {
@@ -163,15 +191,15 @@ export class BaronweatherComponent {
       }
     );
   }
-
+ 
   private addWeatherMarkers(): void {
     this.weatherData.forEach(weather => {
       const station = weather.station;
-
+ 
       // Ensure coordinates contain exactly 2 elements (latitude, longitude)
       if (station.coordinates && station.coordinates.length === 2) {
         const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Leaflet expects [latitude, longitude]
-
+ 
         // Extract weather data from the API response
         const temperature = weather.temperature?.value ?? 'N/A';
         const feelsLike = weather.temperature?.wet_bulb ?? 'N/A'; // Using wet bulb as "feels like"
@@ -183,7 +211,7 @@ export class BaronweatherComponent {
         const rawMetar = weather.raw_metar ?? 'N/A'; // Raw METAR data
         const weatherCode = weather.weather_code.value; // Get the weather code
         const iconUrl = this.weatherIconMap[weatherCode] || this.fallbackIcon; // Get the icon URL
-
+ 
         // Construct a popup content with weather details
         const popupContent = `
         <h3>${station.name} (${station.id})</h3>
@@ -196,8 +224,8 @@ export class BaronweatherComponent {
         <p><strong>Visibility:</strong> ${visibility}</p>
         <p><strong>Raw Metar:</strong> ${rawMetar}</p>
       `;
-
-
+ 
+ 
         // Create a custom icon
         const weatherIcon = L.icon({
           iconUrl: iconUrl,
@@ -205,7 +233,7 @@ export class BaronweatherComponent {
           iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
           popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
         });
-
+ 
         // Add a marker at the weather station's coordinates
         const marker = L.marker(latLng, { icon: weatherIcon })
           .addTo(this.map)
@@ -215,5 +243,5 @@ export class BaronweatherComponent {
       }
     });
   }
-
+ 
 }

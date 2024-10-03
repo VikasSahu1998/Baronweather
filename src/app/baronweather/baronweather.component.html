@@ -1,13 +1,14 @@
 <div id="map" style="height: 100vh;"></div>
 <!-- Floating Menu -->
-
-<div class="floating-menu-control position-fixed" >
+ 
+<div class="floating-menu-control position-fixed">
   <div class="dropdown">
     <button class="btn btn-light" type="button" id="menuButton" data-bs-toggle="dropdown" aria-expanded="false">
       <i class="bi bi-list"></i>
     </button>
     <ul class="dropdown-menu" aria-labelledby="menuButton">
-      <li><a class="dropdown-item" href="#" >Metar</a></li>
+      <li><a class="dropdown-item" (click)="toggleMetarDisplay()">
+        {{ isMetarVisible ? 'Hide METAR' : 'Show METAR' }}</a></li> <!-- Update item to toggle -->
       <li><a class="dropdown-item" href="#">Item 2</a></li>
       <li><a class="dropdown-item" href="#">Item 3</a></li>
     </ul>

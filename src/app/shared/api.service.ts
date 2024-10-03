@@ -7,8 +7,8 @@ import * as CryptoJS from 'crypto-js';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiKey = 'nnwIuwizRz4S';  // Your API Key
-  private apiSecret = 'ZsEketBVyBEjtScGBtG3x6XDjxFrwKjJVRtyB38hQZ';  // Your API Secret
+  private apiKey = 'GTt8Njnc3Z7P';  // Your API Key
+  private apiSecret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';  // Your API Secret
   private baseUrl = 'http://api.velocityweather.com/v1/';
 
   constructor(private http: HttpClient) { }
@@ -37,19 +37,5 @@ export class ApiService {
     const signedUrl = this.signRequest(`${this.baseUrl}${endpoint}?lat=${lat}&lon=${lon}&within_radius=500&max_age=360&from=${timestamp}`);
     return this.http.get<any>(signedUrl);
   }
-
-  // New method to fetch NDFD hourly data
-  getNDFD(lat: number, lon: number, hours: number, utcDate: string): Observable<any> {
-    const timestamp = Math.floor(Date.now() / 1000).toString();  // Current timestamp
-    const endpoint = `${this.apiKey}/reports/ndfd/hourly.json`;
-
-    // Construct the URL with lat, lon, hours, and utc date as per your structure
-    const url = `${this.baseUrl}${endpoint}?lat=${lat}&lon=${lon}&hours=${hours}&utc=${utcDate}`;
-
-    // Sign the request with the timestamp and signature
-    const signedUrl = this.signRequest(url);
-
-    // Make the HTTP GET request
-    return this.http.get<any>(signedUrl);
-  }
+  
 }
