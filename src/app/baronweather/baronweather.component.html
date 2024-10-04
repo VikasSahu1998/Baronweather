@@ -9,8 +9,13 @@
     <ul class="dropdown-menu" aria-labelledby="menuButton">
       <li><a class="dropdown-item" (click)="toggleMetarDisplay()">
         {{ isMetarVisible ? 'Hide METAR' : 'Show METAR' }}</a></li> <!-- Update item to toggle -->
-      <li><a class="dropdown-item" href="#">Item 2</a></li>
+        <li><a class="dropdown-item" (click)="toggleNotamDisplay()">
+          {{ isNotamVisible ? 'Hide NOTAM' : 'Show NOTAM' }}</a></li>
+        
       <li><a class="dropdown-item" href="#">Item 3</a></li>
     </ul>
   </div>
 </div>
+
+
+
