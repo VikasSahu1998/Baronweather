@@ -1,6 +1,6 @@
 <div id="map" style="height: 100vh;"></div>
 <!-- Floating Menu -->
- 
+
 <div class="floating-menu-control position-fixed">
   <div class="dropdown">
     <button class="btn btn-light" type="button" id="menuButton" data-bs-toggle="dropdown" aria-expanded="false">
@@ -8,14 +8,12 @@
     </button>
     <ul class="dropdown-menu" aria-labelledby="menuButton">
       <li><a class="dropdown-item" (click)="toggleMetarDisplay()">
-        {{ isMetarVisible ? 'Hide METAR' : 'Show METAR' }}</a></li> <!-- Update item to toggle -->
-        <li><a class="dropdown-item" (click)="toggleNotamDisplay()">
+          {{ isMetarVisible ? 'Hide METAR' : 'Show METAR' }}</a></li> <!-- Update item to toggle -->
+      <li><a class="dropdown-item" (click)="toggleNotamDisplay()">
           {{ isNotamVisible ? 'Hide NOTAM' : 'Show NOTAM' }}</a></li>
-        
-      <li><a class="dropdown-item" href="#">Item 3</a></li>
+
+      <li><a class="dropdown-item" href="#" (click)="toggleTafDisplay()"> {{ isTafVisible ? 'Hide TAFs' : 'Show TAFs'
+          }}</a></li>
     </ul>
   </div>
 </div>
-
-
-

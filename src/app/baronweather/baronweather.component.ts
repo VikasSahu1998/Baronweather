@@ -14,10 +14,12 @@ export class BaronweatherComponent implements OnInit {
   private map: any;
   public weatherData: any[] = [];
   notamData: any;
+  public isTafVisible = false; // Track visibility of TAFs
+  TafData: any;
   public isNotamVisible = false; // Track visibility of NOTAMs
   private markers: L.Marker[] = []; // To keep track of markers for clearing them
   public isMetarVisible = false; // Public property to track visibility
-  
+
   private weatherIconMap: { [key: string]: string } = {
     "9000": "velocityweather_icons/condition-9000-large-day.png", // Clear
     "9001": "velocityweather_icons/condition-9001-large-day.png", // Sunny
@@ -86,7 +88,7 @@ export class BaronweatherComponent implements OnInit {
   constructor(private weatherService: ApiService) { }
 
   ngOnInit(): void {
-    this.fetchNotamData();
+    this.fetchTafData();
   }
 
   private initMap(): void {
@@ -148,14 +150,16 @@ export class BaronweatherComponent implements OnInit {
     // Event to capture the map view change
     this.map.on('moveend', () => {
       const center = this.map.getCenter();
-      if (this.isMetarVisible) { // Only fetch if METAR is visible
+
+      // Only fetch if METAR is visible
+      if (this.isMetarVisible) {
         this.fetchWeatherData(center.lat, center.lng);
       }
+
+      if (this.isNotamVisible) { this.fetchNotamData(); }
+      if (this.isTafVisible) { this.fetchTafData(); }
     });
 
-    this.map.on('moveend', () => {
-      this.fetchNotamData(); // Call fetchNotamData when the map is moved
-    });
   }
 
   ngAfterViewInit(): void {
@@ -214,10 +218,10 @@ export class BaronweatherComponent implements OnInit {
         const temperature = weather.temperature?.value ?? 'N/A';
         const feelsLike = weather.temperature?.wet_bulb ?? 'N/A'; // Using wet bulb as "feels like"
         const dewPoint = weather.temperature?.dew_point ?? 'N/A';
-        const wind = `${weather.wind?.speed} m/s at ${weather.wind?.dir}°` ?? 'N/A'; // Wind speed and direction
+        const wind = weather.wind ? `${weather.wind.speed} m/s at ${weather.wind.dir}°` : 'N/A';
         const humidity = weather.relative_humidity?.value ?? 'N/A';
         const skyConditions = weather.weather_code?.text ?? 'N/A';
-        const visibility = `${(weather.visibility?.value / 1000).toFixed(1)} km` ?? 'N/A'; // Convert meters to kilometers
+        const visibility = weather.visibility ? `${(weather.visibility.value / 1000).toFixed(1)} km` : 'N/A'; // Convert meters to kilometers
         const rawMetar = weather.raw_metar ?? 'N/A'; // Raw METAR data
         const weatherCode = weather.weather_code.value; // Get the weather code
         const iconUrl = this.weatherIconMap[weatherCode] || this.fallbackIcon; // Get the icon URL
@@ -280,7 +284,6 @@ export class BaronweatherComponent implements OnInit {
     this.weatherService.getNotamData(nLat, sLat, wLon, eLon).subscribe(
       data => {
         this.notamData = data.notams.data;
-        console.log('NOTAM Data:', this.notamData);
 
         // Clear existing markers before adding new ones
         this.clearMarkers();
@@ -351,4 +354,96 @@ export class BaronweatherComponent implements OnInit {
       }
     });
   }
+
+  // Toggle function for TAF visibility
+  public toggleTafDisplay(): void {
+    this.isTafVisible = !this.isTafVisible; // Toggle the flag
+
+    if (this.isTafVisible) {
+      this.fetchTafData(); // Fetch TAF data when turning on
+    } else {
+      this.clearTafMarkers(); // Clear markers when turning off
+    }
+  }
+  private fetchTafData(): void {
+    if (!this.map) {
+      console.error('Map is not initialized yet.');
+      return; // Exit if the map is not initialized
+    }
+
+    const bounds = this.map.getBounds(); // Get the bounds of the map
+    const nLat = bounds.getNorth(); // Get the northern latitude
+    const sLat = bounds.getSouth(); // Get the southern latitude
+    const wLon = bounds.getWest();  // Get the western longitude
+    const eLon = bounds.getEast();  // Get the eastern longitude
+
+    this.weatherService.getTafData(nLat, sLat, wLon, eLon).subscribe(
+      data => {
+        this.TafData = data.tafs.data;
+
+        // Clear existing markers before adding new ones
+        this.clearMarkers(); // You can replace this with a specific clear function for TAF if you want
+
+        // Add markers for each TAF if the toggle is on
+        if (this.isTafVisible) {
+          this.addTafMarkers(this.TafData);
+        }
+      },
+      error => {
+        console.error('Error fetching TAF data:', error);
+      }
+    );
+  }
+  private addTafMarkers(tafData: any[]): void {
+    tafData.forEach(tafEntry => {
+      const station = tafEntry.station;
+
+      // Ensure coordinates contain exactly 2 elements (latitude, longitude)
+      if (station.coordinates && station.coordinates.length === 2) {
+        const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Note the order: [lat, lng]
+
+        // Extract relevant TAF details
+        const tafId = station.id;
+        const rawText = tafEntry.raw_text;
+        const issueTime = new Date(tafEntry.issuetime).toLocaleString(); // Format issue time
+        const validBegin = new Date(tafEntry.valid_begin).toLocaleString();
+        const validEnd = tafEntry.valid_end === "UFN" ? "Until Further Notice" : new Date(tafEntry.valid_end).toLocaleString();
+
+        // Construct popup content with TAF details
+        const popupContent = `
+        <h3>TAF ID: ${tafId}</h3>
+        <p><strong>Issued:</strong> ${issueTime}</p>
+        <p><strong>Valid From:</strong> ${validBegin}</p>
+        <p><strong>Valid Until:</strong> ${validEnd}</p>
+        <p><strong>Details:</strong> ${rawText}</p>
+      `;
+
+        // Create a custom icon for TAF
+        const customIcon = L.icon({
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32]
+        });
+
+        // Add a marker at the station's coordinates
+        const marker = L.marker(latLng, { icon: customIcon })
+          .addTo(this.map)
+          .bindPopup(popupContent);
+
+        // Store the marker for future reference (optional)
+        this.markers.push(marker); // Or use a specific array for TAF markers if desired
+
+      } else {
+        console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
+      }
+    });
+  }
+  private clearTafMarkers(): void {
+    this.markers.forEach(marker => {
+      this.map.removeLayer(marker); // Remove the marker from the map
+    });
+    this.markers = []; // Clear the markers array (or use a specific array for TAF if separate)
+  }
+
 }
