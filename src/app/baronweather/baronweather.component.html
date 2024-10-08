@@ -14,6 +14,13 @@
 
       <li><a class="dropdown-item" href="#" (click)="toggleTafDisplay()"> {{ isTafVisible ? 'Hide TAFs' : 'Show TAFs'
           }}</a></li>
+      <li><a class="dropdown-item" href="#" (click)="fetchSignificantWeatherDatasigwx_mediumData()">Significant Weather
+          Data sigwx_medium</a></li>
+      <li>
+        <a class="dropdown-item" href="#" (click)="togglePolygonsVisibility()">
+          {{ polygonsVisible ? 'Hide airmets_and_sigmets' : 'Show airmets_and_sigmets' }}
+        </a>
+      </li>
     </ul>
   </div>
 </div>

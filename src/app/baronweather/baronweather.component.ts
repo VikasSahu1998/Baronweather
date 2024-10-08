@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import * as L from 'leaflet';
 import { ApiService } from '../shared/api.service';
 import { CommonModule } from '@angular/common';
@@ -10,16 +10,25 @@ import { CommonModule } from '@angular/common';
   templateUrl: './baronweather.component.html',
   styleUrls: ['./baronweather.component.scss']
 })
-export class BaronweatherComponent implements OnInit {
+export class BaronweatherComponent {
   private map: any;
+  airmets_and_sigmets: any[] = [];
+  polygons: L.LayerGroup = L.layerGroup();
+  polygonsVisible: boolean = true; // New property to track visibility
+
   public weatherData: any[] = [];
   notamData: any;
   public isTafVisible = false; // Track visibility of TAFs
   TafData: any;
+  SignificantWeatherDatasigwx_medium: any;
+
+
   public isNotamVisible = false; // Track visibility of NOTAMs
   private markers: L.Marker[] = []; // To keep track of markers for clearing them
   public isMetarVisible = false; // Public property to track visibility
 
+
+  constructor(private weatherService: ApiService) { }
   private weatherIconMap: { [key: string]: string } = {
     "9000": "velocityweather_icons/condition-9000-large-day.png", // Clear
     "9001": "velocityweather_icons/condition-9001-large-day.png", // Sunny
@@ -85,12 +94,6 @@ export class BaronweatherComponent implements OnInit {
   // A fallback icon for unknown weather conditions
   private fallbackIcon = "velocityweather_icons/condition-9999-large-day.png"; // Default icon for unknown conditions
 
-  constructor(private weatherService: ApiService) { }
-
-  ngOnInit(): void {
-    this.fetchTafData();
-  }
-
   private initMap(): void {
     this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([20.5937, 78.9629], 4);
 
@@ -147,7 +150,14 @@ export class BaronweatherComponent implements OnInit {
     // L.control.scale({ position: 'bottomright', metric: false }).addTo(this.map);
     L.control.zoom({ position: 'topleft' }).addTo(this.map);
 
-    // Event to capture the map view change
+    // Trigger data fetch when the map is moved or zoomed
+    this.map.on('moveend', () => {
+      this.fetchairmets_and_sigmetsData();
+    });
+    this.map.on('zoomend', () => {
+      this.fetchairmets_and_sigmetsData();
+    });
+  // Event to capture the map view change
     this.map.on('moveend', () => {
       const center = this.map.getCenter();
 
@@ -159,7 +169,7 @@ export class BaronweatherComponent implements OnInit {
       if (this.isNotamVisible) { this.fetchNotamData(); }
       if (this.isTafVisible) { this.fetchTafData(); }
     });
-
+   
   }
 
   ngAfterViewInit(): void {
@@ -171,279 +181,370 @@ export class BaronweatherComponent implements OnInit {
     }
   }
 
-  // New method to toggle METAR visibility
-  public toggleMetarDisplay(): void {
-    this.isMetarVisible = !this.isMetarVisible; // Toggle the flag
-    if (this.isMetarVisible) {
-      const center = this.map.getCenter();
-      this.fetchWeatherData(center.lat, center.lng); // Fetch weather data when turning on
-    } else {
-      this.removeWeatherMarkers(); // Clear markers when turning off
-    }
-  }
-
-  private removeWeatherMarkers(): void {
-    // Remove all existing weather markers
-    this.map.eachLayer((layer: any) => {
-      if (layer instanceof L.Marker) {
-        this.map.removeLayer(layer);
-      }
-    });
-    this.weatherData = []; // Clear the weather data array
-  }
-
-  private fetchWeatherData(lat: number, lon: number): void {
-    this.weatherService.getWeatherData(lat, lon).subscribe(
-      (data: any) => {
-        if (data?.metars?.data) {
-          this.weatherData = [data.metars.data]; // Wrap it in an array if only one station is returned
-          this.addWeatherMarkers(); // Add weather markers when data is received
-        }
-      },
-      (error) => {
-        console.error('Error fetching weather data:', error);
-      }
-    );
-  }
-
-  private addWeatherMarkers(): void {
-    this.weatherData.forEach(weather => {
-      const station = weather.station;
-
-      // Ensure coordinates contain exactly 2 elements (latitude, longitude)
-      if (station.coordinates && station.coordinates.length === 2) {
-        const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Leaflet expects [latitude, longitude]
-
-        // Extract weather data from the API response
-        const temperature = weather.temperature?.value ?? 'N/A';
-        const feelsLike = weather.temperature?.wet_bulb ?? 'N/A'; // Using wet bulb as "feels like"
-        const dewPoint = weather.temperature?.dew_point ?? 'N/A';
-        const wind = weather.wind ? `${weather.wind.speed} m/s at ${weather.wind.dir}°` : 'N/A';
-        const humidity = weather.relative_humidity?.value ?? 'N/A';
-        const skyConditions = weather.weather_code?.text ?? 'N/A';
-        const visibility = weather.visibility ? `${(weather.visibility.value / 1000).toFixed(1)} km` : 'N/A'; // Convert meters to kilometers
-        const rawMetar = weather.raw_metar ?? 'N/A'; // Raw METAR data
-        const weatherCode = weather.weather_code.value; // Get the weather code
-        const iconUrl = this.weatherIconMap[weatherCode] || this.fallbackIcon; // Get the icon URL
-
-        // Construct a popup content with weather details
-        const popupContent = `
-        <h3>${station.name} (${station.id})</h3>
-        <p><strong>Temperature:</strong> ${temperature}°C</p>
-        <p><strong>Feels Like:</strong> ${feelsLike}°C</p>
-        <p><strong>Dew Point:</strong> ${dewPoint}°C</p>
-        <p><strong>Wind:</strong> ${wind}</p>
-        <p><strong>Relative Humidity:</strong> ${humidity}%</p>
-        <p><strong>Sky Conditions:</strong> ${skyConditions}</p>
-        <p><strong>Visibility:</strong> ${visibility}</p>
-        <p><strong>Raw Metar:</strong> ${rawMetar}</p>
-      `;
-
-
-        // Create a custom icon
-        const weatherIcon = L.icon({
-          iconUrl: iconUrl,
-          iconSize: [32, 32], // Size of the icon
-          iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-          popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
-        });
-
-        // Add a marker at the weather station's coordinates
-        const marker = L.marker(latLng, { icon: weatherIcon })
-          .addTo(this.map)
-          .bindPopup(popupContent);
+    // New method to toggle METAR visibility
+    public toggleMetarDisplay(): void {
+      this.isMetarVisible = !this.isMetarVisible; // Toggle the flag
+      if (this.isMetarVisible) {
+        const center = this.map.getCenter();
+        this.fetchWeatherData(center.lat, center.lng); // Fetch weather data when turning on
       } else {
-        console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
+        this.removeWeatherMarkers(); // Clear markers when turning off
       }
-    });
-  }
-
-  // Toggle function for NOTAM visibility
-  public toggleNotamDisplay(): void {
-    this.isNotamVisible = !this.isNotamVisible; // Toggle the flag
-
-    if (this.isNotamVisible) {
-      this.fetchNotamData(); // Fetch NOTAM data when turning on
-    } else {
-      this.clearMarkers(); // Clear markers when turning off
     }
-  }
-
-  private fetchNotamData(): void {
-    if (!this.map) {
-      console.error('Map is not initialized yet.');
-      return; // Exit if the map is not initialized
-    }
-
-    const bounds = this.map.getBounds(); // Get the bounds of the map
-    const nLat = bounds.getNorth(); // Get the northern latitude
-    const sLat = bounds.getSouth(); // Get the southern latitude
-    const wLon = bounds.getWest();  // Get the western longitude
-    const eLon = bounds.getEast();  // Get the eastern longitude
-
-    this.weatherService.getNotamData(nLat, sLat, wLon, eLon).subscribe(
-      data => {
-        this.notamData = data.notams.data;
-
-        // Clear existing markers before adding new ones
-        this.clearMarkers();
-
-        // Add markers for each NOTAM if the toggle is on
-        if (this.isNotamVisible) {
-          this.addNotamMarkers(this.notamData);
+  
+    private removeWeatherMarkers(): void {
+      // Remove all existing weather markers
+      this.map.eachLayer((layer: any) => {
+        if (layer instanceof L.Marker) {
+          this.map.removeLayer(layer);
         }
-      },
-      error => {
-        console.error('Error fetching NOTAM data:', error);
-      }
-    );
-  }
-
-  private clearMarkers(): void {
-    this.markers.forEach(marker => {
-      this.map.removeLayer(marker); // Remove the marker from the map
-    });
-    this.markers = []; // Clear the markers array
-  }
-
-  private addNotamMarkers(notamData: any[]): void {
-    // Iterate over each NOTAM entry
-    notamData.forEach(notamEntry => {
-      const station = notamEntry.station;
-
-      // Ensure coordinates contain exactly 2 elements (latitude, longitude)
-      if (station.coordinates && station.coordinates.length === 2) {
-        const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Leaflet expects [latitude, longitude]
-
-        // Iterate over each NOTAM in the entry
-        notamEntry.notams.forEach((notam: any) => {
-          // Extract relevant NOTAM details
-          const notamId = notam.id;
-          const rawText = notam.raw_text;
-          const issueTime = new Date(notam.issuetime).toLocaleString(); // Format issue time
-          const validBegin = notam.valid_begin === "WIE" ? "When In Effect" : new Date(notam.valid_begin).toLocaleString();
-          const validEnd = notam.valid_end === "UFN" ? "Until Further Notice" : new Date(notam.valid_end).toLocaleString();
-
-          // Construct popup content with NOTAM details
+      });
+      this.weatherData = []; // Clear the weather data array
+    }
+  
+    private fetchWeatherData(lat: number, lon: number): void {
+      this.weatherService.getWeatherData(lat, lon).subscribe(
+        (data: any) => {
+          if (data?.metars?.data) {
+            this.weatherData = [data.metars.data]; // Wrap it in an array if only one station is returned
+            this.addWeatherMarkers(); // Add weather markers when data is received
+          }
+        },
+        (error) => {
+          console.error('Error fetching weather data:', error);
+        }
+      );
+    }
+  
+    private addWeatherMarkers(): void {
+      this.weatherData.forEach(weather => {
+        const station = weather.station;
+  
+        // Ensure coordinates contain exactly 2 elements (latitude, longitude)
+        if (station.coordinates && station.coordinates.length === 2) {
+          const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Leaflet expects [latitude, longitude]
+  
+          // Extract weather data from the API response
+          const temperature = weather.temperature?.value ?? 'N/A';
+          const feelsLike = weather.temperature?.wet_bulb ?? 'N/A'; // Using wet bulb as "feels like"
+          const dewPoint = weather.temperature?.dew_point ?? 'N/A';
+          const wind = weather.wind ? `${weather.wind.speed} m/s at ${weather.wind.dir}°` : 'N/A';
+          const humidity = weather.relative_humidity?.value ?? 'N/A';
+          const skyConditions = weather.weather_code?.text ?? 'N/A';
+          const visibility = weather.visibility ? `${(weather.visibility.value / 1000).toFixed(1)} km` : 'N/A'; // Convert meters to kilometers
+          const rawMetar = weather.raw_metar ?? 'N/A'; // Raw METAR data
+          const weatherCode = weather.weather_code.value; // Get the weather code
+          const iconUrl = this.weatherIconMap[weatherCode] || this.fallbackIcon; // Get the icon URL
+  
+          // Construct a popup content with weather details
           const popupContent = `
-          <h3>NOTAM ID: ${notamId}</h3>
+          <h3>${station.name} (${station.id})</h3>
+          <p><strong>Temperature:</strong> ${temperature}°C</p>
+          <p><strong>Feels Like:</strong> ${feelsLike}°C</p>
+          <p><strong>Dew Point:</strong> ${dewPoint}°C</p>
+          <p><strong>Wind:</strong> ${wind}</p>
+          <p><strong>Relative Humidity:</strong> ${humidity}%</p>
+          <p><strong>Sky Conditions:</strong> ${skyConditions}</p>
+          <p><strong>Visibility:</strong> ${visibility}</p>
+          <p><strong>Raw Metar:</strong> ${rawMetar}</p>
+        `;
+  
+  
+          // Create a custom icon
+          const weatherIcon = L.icon({
+            iconUrl: iconUrl,
+            iconSize: [32, 32], // Size of the icon
+            iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+            popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+          });
+  
+          // Add a marker at the weather station's coordinates
+          const marker = L.marker(latLng, { icon: weatherIcon })
+            .addTo(this.map)
+            .bindPopup(popupContent);
+        } else {
+          console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
+        }
+      });
+    }
+  
+    // Toggle function for NOTAM visibility
+    public toggleNotamDisplay(): void {
+      this.isNotamVisible = !this.isNotamVisible; // Toggle the flag
+  
+      if (this.isNotamVisible) {
+        this.fetchNotamData(); // Fetch NOTAM data when turning on
+      } else {
+        this.clearMarkers(); // Clear markers when turning off
+      }
+    }
+  
+    private fetchNotamData(): void {
+      if (!this.map) {
+        console.error('Map is not initialized yet.');
+        return; // Exit if the map is not initialized
+      }
+  
+      const bounds = this.map.getBounds(); // Get the bounds of the map
+      const nLat = bounds.getNorth(); // Get the northern latitude
+      const sLat = bounds.getSouth(); // Get the southern latitude
+      const wLon = bounds.getWest();  // Get the western longitude
+      const eLon = bounds.getEast();  // Get the eastern longitude
+  
+      this.weatherService.getNotamData(nLat, sLat, wLon, eLon).subscribe(
+        data => {
+          this.notamData = data.notams.data;
+  
+          // Clear existing markers before adding new ones
+          this.clearMarkers();
+  
+          // Add markers for each NOTAM if the toggle is on
+          if (this.isNotamVisible) {
+            this.addNotamMarkers(this.notamData);
+          }
+        },
+        error => {
+          console.error('Error fetching NOTAM data:', error);
+        }
+      );
+    }
+  
+    private clearMarkers(): void {
+      this.markers.forEach(marker => {
+        this.map.removeLayer(marker); // Remove the marker from the map
+      });
+      this.markers = []; // Clear the markers array
+    }
+  
+    private addNotamMarkers(notamData: any[]): void {
+      // Iterate over each NOTAM entry
+      notamData.forEach(notamEntry => {
+        const station = notamEntry.station;
+  
+        // Ensure coordinates contain exactly 2 elements (latitude, longitude)
+        if (station.coordinates && station.coordinates.length === 2) {
+          const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Leaflet expects [latitude, longitude]
+  
+          // Iterate over each NOTAM in the entry
+          notamEntry.notams.forEach((notam: any) => {
+            // Extract relevant NOTAM details
+            const notamId = notam.id;
+            const rawText = notam.raw_text;
+            const issueTime = new Date(notam.issuetime).toLocaleString(); // Format issue time
+            const validBegin = notam.valid_begin === "WIE" ? "When In Effect" : new Date(notam.valid_begin).toLocaleString();
+            const validEnd = notam.valid_end === "UFN" ? "Until Further Notice" : new Date(notam.valid_end).toLocaleString();
+  
+            // Construct popup content with NOTAM details
+            const popupContent = `
+            <h3>NOTAM ID: ${notamId}</h3>
+            <p><strong>Issued:</strong> ${issueTime}</p>
+            <p><strong>Valid From:</strong> ${validBegin}</p>
+            <p><strong>Valid Until:</strong> ${validEnd}</p>
+            <p><strong>Details:</strong> ${rawText}</p>
+          `;
+  
+            // Create a custom icon
+            const customIcon = L.icon({
+              iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', // Base64 image string
+              iconSize: [32, 32], // Size of the icon
+              iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
+              popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+            });
+  
+            // Add a marker at the station's coordinates
+            const marker = L.marker(latLng, { icon: customIcon })
+              .addTo(this.map)
+              .bindPopup(popupContent);
+  
+            // Store the marker for future reference
+            this.markers.push(marker);
+          });
+        } else {
+          console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
+        }
+      });
+    }
+  
+    // Toggle function for TAF visibility
+    public toggleTafDisplay(): void {
+      this.isTafVisible = !this.isTafVisible; // Toggle the flag
+  
+      if (this.isTafVisible) {
+        this.fetchTafData(); // Fetch TAF data when turning on
+      } else {
+        this.clearTafMarkers(); // Clear markers when turning off
+      }
+    }
+    private fetchTafData(): void {
+      if (!this.map) {
+        console.error('Map is not initialized yet.');
+        return; // Exit if the map is not initialized
+      }
+  
+      const bounds = this.map.getBounds(); // Get the bounds of the map
+      const nLat = bounds.getNorth(); // Get the northern latitude
+      const sLat = bounds.getSouth(); // Get the southern latitude
+      const wLon = bounds.getWest();  // Get the western longitude
+      const eLon = bounds.getEast();  // Get the eastern longitude
+  
+      this.weatherService.getTafData(nLat, sLat, wLon, eLon).subscribe(
+        data => {
+          this.TafData = data.tafs.data;
+  
+          // Clear existing markers before adding new ones
+          this.clearMarkers(); // You can replace this with a specific clear function for TAF if you want
+  
+          // Add markers for each TAF if the toggle is on
+          if (this.isTafVisible) {
+            this.addTafMarkers(this.TafData);
+          }
+        },
+        error => {
+          console.error('Error fetching TAF data:', error);
+        }
+      );
+    }
+    private addTafMarkers(tafData: any[]): void {
+      tafData.forEach(tafEntry => {
+        const station = tafEntry.station;
+  
+        // Ensure coordinates contain exactly 2 elements (latitude, longitude)
+        if (station.coordinates && station.coordinates.length === 2) {
+          const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Note the order: [lat, lng]
+  
+          // Extract relevant TAF details
+          const tafId = station.id;
+          const rawText = tafEntry.raw_text;
+          const issueTime = new Date(tafEntry.issuetime).toLocaleString(); // Format issue time
+          const validBegin = new Date(tafEntry.valid_begin).toLocaleString();
+          const validEnd = tafEntry.valid_end === "UFN" ? "Until Further Notice" : new Date(tafEntry.valid_end).toLocaleString();
+  
+          // Construct popup content with TAF details
+          const popupContent = `
+          <h3>TAF ID: ${tafId}</h3>
           <p><strong>Issued:</strong> ${issueTime}</p>
           <p><strong>Valid From:</strong> ${validBegin}</p>
           <p><strong>Valid Until:</strong> ${validEnd}</p>
           <p><strong>Details:</strong> ${rawText}</p>
         `;
-
-          // Create a custom icon
+  
+          // Create a custom icon for TAF
           const customIcon = L.icon({
-            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', // Base64 image string
-            iconSize: [32, 32], // Size of the icon
-            iconAnchor: [16, 32], // Point of the icon which will correspond to marker's location
-            popupAnchor: [0, -32] // Point from which the popup should open relative to the iconAnchor
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            iconSize: [32, 32],
+            iconAnchor: [16, 32],
+            popupAnchor: [0, -32]
           });
-
+  
           // Add a marker at the station's coordinates
           const marker = L.marker(latLng, { icon: customIcon })
             .addTo(this.map)
             .bindPopup(popupContent);
-
-          // Store the marker for future reference
-          this.markers.push(marker);
-        });
-      } else {
-        console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
-      }
-    });
-  }
-
-  // Toggle function for TAF visibility
-  public toggleTafDisplay(): void {
-    this.isTafVisible = !this.isTafVisible; // Toggle the flag
-
-    if (this.isTafVisible) {
-      this.fetchTafData(); // Fetch TAF data when turning on
-    } else {
-      this.clearTafMarkers(); // Clear markers when turning off
-    }
-  }
-  private fetchTafData(): void {
-    if (!this.map) {
-      console.error('Map is not initialized yet.');
-      return; // Exit if the map is not initialized
-    }
-
-    const bounds = this.map.getBounds(); // Get the bounds of the map
-    const nLat = bounds.getNorth(); // Get the northern latitude
-    const sLat = bounds.getSouth(); // Get the southern latitude
-    const wLon = bounds.getWest();  // Get the western longitude
-    const eLon = bounds.getEast();  // Get the eastern longitude
-
-    this.weatherService.getTafData(nLat, sLat, wLon, eLon).subscribe(
-      data => {
-        this.TafData = data.tafs.data;
-
-        // Clear existing markers before adding new ones
-        this.clearMarkers(); // You can replace this with a specific clear function for TAF if you want
-
-        // Add markers for each TAF if the toggle is on
-        if (this.isTafVisible) {
-          this.addTafMarkers(this.TafData);
+  
+          // Store the marker for future reference (optional)
+          this.markers.push(marker); // Or use a specific array for TAF markers if desired
+  
+        } else {
+          console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
         }
+      });
+    }
+    private clearTafMarkers(): void {
+      this.markers.forEach(marker => {
+        this.map.removeLayer(marker); // Remove the marker from the map
+      });
+      this.markers = []; // Clear the markers array (or use a specific array for TAF if separate)
+    }
+  
+
+  // Method to toggle polygon visibility
+  togglePolygonsVisibility(): void {
+    if (this.polygonsVisible) {
+      this.map.removeLayer(this.polygons); // Hide polygons
+    } else {
+      this.fetchairmets_and_sigmetsData()
+      this.polygons.addTo(this.map); // Show polygons
+    }
+    this.polygonsVisible = !this.polygonsVisible; // Toggle the state
+  }
+  // Method to fetch AIRMETs and SIGMETs data based on map view
+  fetchairmets_and_sigmetsData(): void {
+    this.weatherService.getAirmetsAndSigmetsData().subscribe(
+      data => {
+        this.airmets_and_sigmets = data.airmets_and_sigmets.data;
+        this.addHazardPolygons();
+      },
+      error => {
+        console.error('Error fetching AIRMETs and SIGMETs data:', error);
+      }
+    );
+  }
+
+ 
+ // Method to add polygons for each hazard on the map
+ addHazardPolygons(): void {
+  // Clear existing polygons
+  this.polygons.clearLayers();
+
+  this.airmets_and_sigmets.forEach(hazard => {
+    const coordinates = hazard.geometry.coordinates.map((coord: [number, number]) => [coord[1], coord[0]]); // Flip lat/lng
+
+    const polygon = L.polygon(coordinates, {
+      color: 'red',
+      weight: 2,
+      fillOpacity: 0.5,
+    });
+
+    polygon.bindPopup(this.createPopupContent(hazard));
+
+    polygon.on('click', () => {
+      polygon.openPopup();
+    });
+
+    this.polygons.addLayer(polygon);
+  });
+
+  // Add polygons to the layer group initially
+  if (this.polygonsVisible) {
+    this.polygons.addTo(this.map);
+  }
+}
+
+
+  // Method to create the content for the popup
+  private createPopupContent(hazard: any): string {
+    // Safely extract altitude information
+    const minAltitude = hazard.altitude?.min?.value || 'N/A'; // Default to 'N/A' if not defined
+    const maxAltitude = hazard.altitude?.max?.value || 'N/A'; // Default to 'N/A' if not defined
+    const minAltitudeUnits = hazard.altitude?.min?.units || ''; // Default to empty string if not defined
+    const maxAltitudeUnits = hazard.altitude?.max?.units || ''; // Default to empty string if not defined
+  
+    return `
+      <div>
+        <strong>Type:</strong> ${hazard.type}<br>
+        <strong>Valid Begin:</strong> ${new Date(hazard.valid_begin).toLocaleString()}<br>
+        <strong>Valid End:</strong> ${new Date(hazard.valid_end).toLocaleString()}<br>
+        <strong>Hazard Type:</strong> ${hazard.hazard.type}<br>
+        <strong>Hazard Severity:</strong> ${hazard.hazard.severity}<br>
+        <strong>Raw Text:</strong> ${hazard.raw_text || 'N/A'}<br>
+        <strong>Altitude:</strong> ${minAltitude} ${minAltitudeUnits} - ${maxAltitude} ${maxAltitudeUnits}<br>
+      </div>
+    `;
+  }
+  
+
+   // Toggle function for Significant Weather Charts (Global)  visibility
+   fetchSignificantWeatherDatasigwx_mediumData(): void {
+
+    this.weatherService.getSignificantWeatherChartsData().subscribe(
+      data => {
+        this.SignificantWeatherDatasigwx_medium = data.sigwx_medium.data;
+        console.log("SignificantWeatherChartsData workig", this.SignificantWeatherDatasigwx_medium)
       },
       error => {
         console.error('Error fetching TAF data:', error);
       }
     );
   }
-  private addTafMarkers(tafData: any[]): void {
-    tafData.forEach(tafEntry => {
-      const station = tafEntry.station;
-
-      // Ensure coordinates contain exactly 2 elements (latitude, longitude)
-      if (station.coordinates && station.coordinates.length === 2) {
-        const latLng: L.LatLngTuple = [station.coordinates[1], station.coordinates[0]]; // Note the order: [lat, lng]
-
-        // Extract relevant TAF details
-        const tafId = station.id;
-        const rawText = tafEntry.raw_text;
-        const issueTime = new Date(tafEntry.issuetime).toLocaleString(); // Format issue time
-        const validBegin = new Date(tafEntry.valid_begin).toLocaleString();
-        const validEnd = tafEntry.valid_end === "UFN" ? "Until Further Notice" : new Date(tafEntry.valid_end).toLocaleString();
-
-        // Construct popup content with TAF details
-        const popupContent = `
-        <h3>TAF ID: ${tafId}</h3>
-        <p><strong>Issued:</strong> ${issueTime}</p>
-        <p><strong>Valid From:</strong> ${validBegin}</p>
-        <p><strong>Valid Until:</strong> ${validEnd}</p>
-        <p><strong>Details:</strong> ${rawText}</p>
-      `;
-
-        // Create a custom icon for TAF
-        const customIcon = L.icon({
-          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-          iconSize: [32, 32],
-          iconAnchor: [16, 32],
-          popupAnchor: [0, -32]
-        });
-
-        // Add a marker at the station's coordinates
-        const marker = L.marker(latLng, { icon: customIcon })
-          .addTo(this.map)
-          .bindPopup(popupContent);
-
-        // Store the marker for future reference (optional)
-        this.markers.push(marker); // Or use a specific array for TAF markers if desired
-
-      } else {
-        console.warn(`Station ${station.id} has invalid coordinates:`, station.coordinates);
-      }
-    });
-  }
-  private clearTafMarkers(): void {
-    this.markers.forEach(marker => {
-      this.map.removeLayer(marker); // Remove the marker from the map
-    });
-    this.markers = []; // Clear the markers array (or use a specific array for TAF if separate)
-  }
-
+  
 }
