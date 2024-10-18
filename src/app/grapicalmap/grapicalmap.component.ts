@@ -59,10 +59,10 @@ export class GrapicalmapComponent {
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
   }
 
-  private addWmsLayer(): L.TileLayer.WMS | null {
+  private addWmsLayer(): void {
     if (!this.latestTimeStep || this.latestTimeStep === '') {
       console.error("No valid time step available to add WMS layer.");
-      return null; // Return null if the layer can't be created
+      return; // Exit the function if latestTimeStep is undefined or empty
     }
   
     const timeStep = this.latestTimeStep; // Use the dynamically fetched time step
@@ -75,7 +75,7 @@ export class GrapicalmapComponent {
     // Log the URL for debugging
     console.log("Updated WMS URL:", wmsUrl);
   
-    // Create WMS Layer with the correct URL
+    // Create WMS Layer with the correct URL and avoid setting duplicate parameters
     const wmsLayer = L.tileLayer.wms(wmsUrl, {
       format: 'image/png',
       transparent: true,
@@ -83,7 +83,8 @@ export class GrapicalmapComponent {
       crs: L.CRS.EPSG3857
     });
   
-    return wmsLayer;
+    // Add WMS layer to the map
+    wmsLayer.addTo(this.map);
   }
   
 
