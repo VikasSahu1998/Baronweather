@@ -4,5 +4,5 @@ import { GrapicalmapComponent } from './grapicalmap/grapicalmap.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '', pathMatch: 'full' }, 
-    { path: '', component: BaronweatherComponent },
+    { path: '', component: GrapicalmapComponent },
 ];

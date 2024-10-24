@@ -77,4 +77,5 @@ export class ApiService {
     const signedUrl = this.signRequest(url);
     return this.http.get<any>(signedUrl);
   }
+
 }

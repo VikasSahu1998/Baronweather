@@ -78,7 +78,9 @@ export class GrapicalmapComponent {
     // Create WMS Layer with the correct URL and avoid setting duplicate parameters
     const wmsLayer = L.tileLayer.wms(wmsUrl, {
       format: 'image/png',
+      version:'1.3.0',
       transparent: true,
+      layers:`${timeStep}`,
       attribution: '© Velocity Weather',
       crs: L.CRS.EPSG3857
     });
