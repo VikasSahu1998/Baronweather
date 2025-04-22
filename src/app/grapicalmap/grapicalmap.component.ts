@@ -13,10 +13,10 @@ import { HttpClient } from '@angular/common/http'; // Import HttpClient for API 
 })
 export class GrapicalmapComponent {
   map!: L.Map;
-  private key = 'GTt8Njnc3Z7P';  // Your API key
-  private secret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';  // Your API secret
+  private key = 'LWNxY0S41tHP';  // Your API key
+  private secret = 'OtEnfA7OyQjoTYoNkjMts3zjKBn7KolbLsSV7tstiz';  // Your API secret
   private wmsBaseUrl = 'https://api.velocityweather.com/v1';
-  private productCode = 'C09-0x0316-0'; // Example Product Code
+  private productCode = 'sigwx_chart/all'; // Example Product Code
   private configurationCode = 'Standard-Mercator'; // Example Config Code
   private latestTimeStep: string = ''; // Store latest time step
 
@@ -70,7 +70,7 @@ export class GrapicalmapComponent {
     const signature = this.signRequest(this.key, timestamp); // Generate the HMAC signature
   
     // Construct the WMS URL with only necessary parameters
-    const wmsUrl = `https://api.velocityweather.com/v1/${this.key}/wms/${this.productCode}/${this.configurationCode}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetMap&CRS=EPSG:3857&LAYERS=${timeStep}&BBOX=-19000030.25383,-747262.291898,-2929909.4293921,1042110.4783351&WIDTH=256&HEIGHT=256&TIME=${timeStep}&ts=${timestamp}&sig=${signature}&FORMAT=image/png&TRANSPARENT=true`;
+    const wmsUrl = `${this.wmsBaseUrl}/${this.key}/wms/${this.productCode}/${this.configurationCode}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetMap&CRS=EPSG:3857&LAYERS=${timeStep}&BBOX=-19000030.25383,-747262.291898,-2929909.4293921,1042110.4783351&WIDTH=256&HEIGHT=256&TIME=${timeStep}&ts=${timestamp}&sig=${signature}&FORMAT=image/png&TRANSPARENT=true`;
   
     // Log the URL for debugging
     console.log("Updated WMS URL:", wmsUrl);

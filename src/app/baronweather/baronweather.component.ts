@@ -542,7 +542,7 @@ export class BaronweatherComponent {
         console.log("SignificantWeatherChartsData workig", this.SignificantWeatherDatasigwx_medium)
       },
       error => {
-        console.error('Error fetching TAF data:', error);
+        console.error('Error fetching SignificantWeatherChartsData data:', error);
       }
     );
   }

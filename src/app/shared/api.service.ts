@@ -7,8 +7,8 @@ import * as CryptoJS from 'crypto-js';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiKey = 'GTt8Njnc3Z7P';  // Your API Key
-  private apiSecret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';  // Your API Secret
+  private apiKey = 'LWNxY0S41tHP';  // Your API Key
+  private apiSecret = 'OtEnfA7OyQjoTYoNkjMts3zjKBn7KolbLsSV7tstiz';  // Your API Secret
   private baseUrl = 'http://api.velocityweather.com/v1/';
 
   constructor(private http: HttpClient) { }
