@@ -13,10 +13,10 @@ import { HttpClient } from '@angular/common/http'; // Import HttpClient for API 
 })
 export class GrapicalmapComponent {
   map!: L.Map;
-  private key = 'LWNxY0S41tHP';  // Your API key
-  private secret = 'OtEnfA7OyQjoTYoNkjMts3zjKBn7KolbLsSV7tstiz';  // Your API secret
+  private key = 'GTt8Njnc3Z7P';  // Your API key
+  private secret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';  // Your API secret
   private wmsBaseUrl = 'https://api.velocityweather.com/v1';
-  private productCode = 'sigwx_chart/all'; // Example Product Code
+  private productCode = 'wafs-hires-icing-fl060'; // Example Product Code
   private configurationCode = 'Standard-Mercator'; // Example Config Code
   private latestTimeStep: string = ''; // Store latest time step
 
