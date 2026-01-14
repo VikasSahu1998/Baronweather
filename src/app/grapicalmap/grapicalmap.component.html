@@ -11,52 +11,75 @@
     </div>
   </div>
 
-  <!-- Custom Legend -->
-  <div *ngIf="displayedLegend.length > 0" class="custom-legend">
-    <div class="legend-header">
-      <h4>Wind Speed (mph)</h4>
-      <button class="legend-toggle" (click)="toggleLegendView()">
-        {{ showFullLegend ? '▲' : '▼' }}
-      </button>
-    </div>
-    
-    <div class="legend-content">
-      <div class="legend-color-bar">
-        <div *ngFor="let entry of windSpeedLegend" 
-             class="color-segment"
-             [style.background-color]="entry.color"
-             [title]="entry.value">
-        </div>
-      </div>
-      
-      <div class="legend-values">
-        <div *ngFor="let entry of displayedLegend" class="legend-value-item">
-          <span class="value-dot" [style.background-color]="entry.color"></span>
-          <span class="value-text">{{ entry.value }}</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Time Control -->
-  <div *ngIf="forecastTimes.length > 0" class="time-control">
-    <div class="time-header">
-      <button class="play-btn" (click)="toggleAnimation()">
-        {{ isPlaying ? '⏸' : '▶' }}
-      </button>
-      <span class="time-display">{{ displayedTime }}</span>
-    </div>
-    
-    <div class="slider-container">
-      <input type="range" 
-             [min]="0" 
-             [max]="forecastTimes.length - 1" 
-             [value]="forecastTimes.indexOf(selectedTime)"
-             (input)="selectedTime = forecastTimes[$any($event.target).value]; addWmsLayer()"
-             class="time-slider">
-    </div>
-  </div>
-
   <!-- Map -->
   <div id="map"></div>
+
+  <!-- Custom Legend (Vertical Gradient) -->
+  <div *ngIf="displayedLegend.length > 0" class="custom-legend-vertical">
+    <div class="legend-container">
+      <div class="legend-values">
+        <!-- Show high values at top (reverse order of gradient which is to top) -->
+        <div *ngFor="let entry of displayedLegend.slice().reverse()" class="legend-label">
+          {{ entry.value.replace(' mph', '') }}
+        </div>
+      </div>
+      <div class="legend-bar" [style.background-image]="gradientStyle"></div>
+    </div>
+    <div class="legend-title">mph</div>
+  </div>
+
+  <!-- Time Control (Bottom Bar) -->
+  <div *ngIf="forecastTimes.length > 0" class="bottom-time-control">
+    <div class="control-group left">
+      <button class="play-btn" (click)="toggleAnimation()" title="Play/Pause Animation">
+        <span *ngIf="!isPlaying">▶</span>
+        <span *ngIf="isPlaying">⏸</span>
+      </button>
+
+      <button class="nav-btn" (click)="selectPrevTime()" title="Previous Time Step">
+        <span>⏮</span>
+      </button>
+
+      <!-- Date Selector -->
+      <div class="date-selector">
+        <button class="date-btn" (click)="toggleCalendar()">
+          {{ selectedDate | date:'EEEE, MMM d' }}
+          <span class="arrow">▼</span>
+        </button>
+
+        <div class="calendar-popup" *ngIf="showCalendar">
+          <div class="calendar-grid">
+            <button *ngFor="let date of uniqueDates" class="calendar-day" [class.active]="date === selectedDate"
+              (click)="selectDate(date)">
+              <span class="day-name">{{ date | date:'EEE' }}</span>
+              <span class="day-num">{{ date | date:'d' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-group center timeline-wrapper">
+      <div class="timeline-track">
+        <input type="range" [min]="0" [max]="currentDayTimes.length - 1" [value]="currentIndex"
+          (input)="onTimelineInput($event)" class="timeline-slider">
+
+        <div class="timeline-ticks">
+          <!-- Show fewer ticks to avoid crowding -->
+          <ng-container *ngFor="let time of currentDayTimes; let i = index">
+            <div *ngIf="i % 4 === 0" class="tick" [style.left.%]="(i / (currentDayTimes.length - 1)) * 100">
+              <div class="tick-mark"></div>
+              <span class="tick-label">{{ formatTickTime(time) }}</span>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="control-group right">
+      <button class="nav-btn" (click)="selectNextTime()" title="Next Time Step">
+        <span>⏭</span>
+      </button>
+    </div>
+  </div>
 </div>

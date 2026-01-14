@@ -50,6 +50,11 @@ export class GrapicalmapComponent implements OnInit {
   isPlaying = false;
   private animationInterval: any;
 
+  // Date Selection Properties
+  uniqueDates: string[] = [];
+  selectedDate = '';
+  showCalendar = false;
+
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
@@ -65,6 +70,10 @@ export class GrapicalmapComponent implements OnInit {
   initMap(): void {
     this.map = L.map('map', { zoomControl: false, attributionControl: false })
       .setView([20.5937, 78.9629], 5);
+
+    // Create a custom pane for weather layers to ensure they are always on top of base layers
+    this.map.createPane('weatherPane');
+    this.map.getPane('weatherPane')!.style.zIndex = '600'; // Higher than tilePane (200) and overlayPane (400)
 
     const streets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
       subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
@@ -89,10 +98,9 @@ export class GrapicalmapComponent implements OnInit {
       { position: 'topleft' }
     ).addTo(this.map);
 
-    L.control.scale({ position: 'bottomright', metric: false }).addTo(this.map);
-    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
-
-    this.legendControl = new L.Control({ position: 'bottomleft' });
+    L.control.zoom({ position: 'topleft' }).addTo(this.map);
+    L.control.scale({ position: 'topleft', metric: false }).addTo(this.map);
+    this.legendControl = new L.Control({ position: 'topleft' });
     this.legendControl.onAdd = () => {
       const div = L.DomUtil.create('div', 'legend');
       div.style.display = 'none'; // Hide default leaflet legend
@@ -108,6 +116,7 @@ export class GrapicalmapComponent implements OnInit {
   onProductChange(event: Event): void {
     this.productCode = (event.target as HTMLSelectElement).value;
     this.forecastTimes = [];
+    this.uniqueDates = [];
     this.selectedTime = '';
     this.updateWmsLayer();
   }
@@ -140,6 +149,8 @@ export class GrapicalmapComponent implements OnInit {
           nextIndex = 0;
         }
         this.selectedTime = this.forecastTimes[nextIndex];
+        // Ensure selectedDate updates if we cross midnight during animation
+        this.syncSelectedDate();
         this.addWmsLayer();
         nextIndex++;
       }, 2000); // Change every 2 seconds
@@ -184,7 +195,8 @@ export class GrapicalmapComponent implements OnInit {
       layers: this.latestTimeStep,
       format: 'image/png',
       transparent: true,
-      version: '1.3.0'
+      version: '1.3.0',
+      pane: 'weatherPane' // Add to custom pane with high z-index
     });
 
     this.wmsLayer.addTo(this.map);
@@ -201,17 +213,119 @@ export class GrapicalmapComponent implements OnInit {
         return keyValues.includes(speed);
       });
 
-      if (!this.showFullLegend) {
-        // For collapsed view, show even fewer values
-        const collapsedValues = [0, 10, 20, 30, 50, 70, 100, 150, 200, 255];
-        this.displayedLegend = this.windSpeedLegend.filter(entry => {
-          const speed = parseInt(entry.value.replace(' mph', ''));
-          return collapsedValues.includes(speed);
-        });
-      }
+      // default to collapsed values for now as we might use them for labels next to gradient
+      const collapsedValues = [0, 10, 20, 30, 50, 70, 100, 150, 200, 255];
+      this.displayedLegend = this.windSpeedLegend.filter(entry => {
+        const speed = parseInt(entry.value.replace(' mph', ''));
+        return collapsedValues.includes(speed);
+      });
     } else {
       this.displayedLegend = [];
     }
+  }
+
+  get gradientStyle(): string {
+    if (!this.windSpeedLegend || this.windSpeedLegend.length === 0) return '';
+    // Create a linear gradient string from bottom to top
+    // entries are usually in order of value.
+    // We want the gradient to match the values.
+    // valid entries have color and value.
+    const stops = this.windSpeedLegend.map((entry, index) => {
+      // Distribute stops evenly or based on value?
+      // For simplicity and to match the visual of "equal steps", we can distribute evenly.
+      // Or we can try to respect the value scale. Wind speed is non-linear in visualization often,
+      // but here the legend entries provided seem to be the discrete steps.
+      // Let's just create a stop for each color.
+
+      // If we want a smooth gradient, we just list colors.
+      // If we want discrete blocks like the original but "continuous looking", we can use hard stops.
+
+      // The request is "vertical gradient bar".
+      return entry.color;
+    });
+
+    return `linear-gradient(to top, ${stops.join(', ')})`;
+  }
+
+  /* ---------------- TIMELINE & DATE HELPERS ---------------- */
+
+  // Filter times for the currently selected date
+  get currentDayTimes(): string[] {
+    if (!this.selectedDate) return [];
+    return this.forecastTimes.filter(time => time.startsWith(this.selectedDate));
+  }
+
+  // Current index within the filtered day list
+  get currentIndex(): number {
+    return this.currentDayTimes.indexOf(this.selectedTime);
+  }
+
+  // Global index for navigation
+  get globalIndex(): number {
+    return this.forecastTimes.indexOf(this.selectedTime);
+  }
+
+  selectNextTime(): void {
+    const nextIndex = this.globalIndex + 1;
+    if (nextIndex < this.forecastTimes.length) {
+      this.selectedTime = this.forecastTimes[nextIndex];
+      this.syncSelectedDate();
+      this.addWmsLayer();
+    }
+  }
+
+  selectPrevTime(): void {
+    const prevIndex = this.globalIndex - 1;
+    if (prevIndex >= 0) {
+      this.selectedTime = this.forecastTimes[prevIndex];
+      this.syncSelectedDate();
+      this.addWmsLayer();
+    }
+  }
+
+  formatTickTime(timeStr: string): string {
+    if (!timeStr) return '';
+    const date = new Date(timeStr);
+    let hours = date.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    return hours + ' ' + ampm;
+  }
+
+  onTimelineInput(event: Event): void {
+    // The slider returns index within currentDayTimes
+    const target = event.target as HTMLInputElement;
+    const index = parseInt(target.value, 10);
+
+    const dayTimes = this.currentDayTimes;
+    if (index >= 0 && index < dayTimes.length) {
+      this.selectedTime = dayTimes[index];
+      this.addWmsLayer();
+    }
+  }
+
+  toggleCalendar(): void {
+    this.showCalendar = !this.showCalendar;
+  }
+
+  selectDate(date: string): void {
+    this.selectedDate = date;
+    this.showCalendar = false;
+
+    // Select first time of this date
+    const times = this.currentDayTimes;
+    if (times.length > 0) {
+      this.selectedTime = times[0];
+      this.addWmsLayer();
+    }
+  }
+
+  private syncSelectedDate(): void {
+    if (!this.selectedTime) return;
+    // Extract YYYY-MM-DD from the selected time string (ISO format)
+    // Assuming format 2026-01-14T...
+    this.selectedDate = this.selectedTime.split('T')[0];
   }
 
   toggleLegendView(): void {
@@ -257,12 +371,18 @@ export class GrapicalmapComponent implements OnInit {
           // efficient way to reverse-chronological -> chronological
           this.forecastTimes = [...latestInstance.valid_times].reverse();
 
+          // Extract unique dates
+          const dates = new Set(this.forecastTimes.map(t => t.split('T')[0]));
+          this.uniqueDates = Array.from(dates);
+
           if (this.forecastTimes.length > 0) {
             this.selectedTime = this.forecastTimes[0];
+            this.syncSelectedDate();
           }
         } else {
           this.forecastTimes = [];
           this.selectedTime = '';
+          this.uniqueDates = [];
         }
       }
 
