@@ -1,0 +1,1032 @@
+{
+    "palettes": [
+        {
+            "entries": [
+                {
+                    "color": "#caffcaff",
+                    "value": "0 mph"
+                },
+                {
+                    "color": "#b9f4adff",
+                    "value": "1 mph"
+                },
+                {
+                    "color": "#a9ea90ff",
+                    "value": "2 mph"
+                },
+                {
+                    "color": "#99e073ff",
+                    "value": "3 mph"
+                },
+                {
+                    "color": "#88d656ff",
+                    "value": "4 mph"
+                },
+                {
+                    "color": "#78cc39ff",
+                    "value": "5 mph"
+                },
+                {
+                    "color": "#68c21cff",
+                    "value": "6 mph"
+                },
+                {
+                    "color": "#58b800ff",
+                    "value": "7 mph"
+                },
+                {
+                    "color": "#68bf00ff",
+                    "value": "8 mph"
+                },
+                {
+                    "color": "#79c600ff",
+                    "value": "9 mph"
+                },
+                {
+                    "color": "#89cd00ff",
+                    "value": "10 mph"
+                },
+                {
+                    "color": "#9ad400ff",
+                    "value": "11 mph"
+                },
+                {
+                    "color": "#aadb00ff",
+                    "value": "12 mph"
+                },
+                {
+                    "color": "#bbe200ff",
+                    "value": "13 mph"
+                },
+                {
+                    "color": "#cce900ff",
+                    "value": "14 mph"
+                },
+                {
+                    "color": "#dcf000ff",
+                    "value": "15 mph"
+                },
+                {
+                    "color": "#edf700ff",
+                    "value": "16 mph"
+                },
+                {
+                    "color": "#fdfe00ff",
+                    "value": "17 mph"
+                },
+                {
+                    "color": "#fee300ff",
+                    "value": "18 mph"
+                },
+                {
+                    "color": "#fec800ff",
+                    "value": "19 mph"
+                },
+                {
+                    "color": "#feae00ff",
+                    "value": "20 mph"
+                },
+                {
+                    "color": "#fe9300ff",
+                    "value": "21 mph"
+                },
+                {
+                    "color": "#fe7900ff",
+                    "value": "22 mph"
+                },
+                {
+                    "color": "#fe5e00ff",
+                    "value": "23 mph"
+                },
+                {
+                    "color": "#fe4300ff",
+                    "value": "24 mph"
+                },
+                {
+                    "color": "#ff2200ff",
+                    "value": "25 mph"
+                },
+                {
+                    "color": "#ff0000ff",
+                    "value": "26 mph"
+                },
+                {
+                    "color": "#f80000ff",
+                    "value": "27 mph"
+                },
+                {
+                    "color": "#f20000ff",
+                    "value": "28 mph"
+                },
+                {
+                    "color": "#ec0000ff",
+                    "value": "29 mph"
+                },
+                {
+                    "color": "#e60000ff",
+                    "value": "30 mph"
+                },
+                {
+                    "color": "#e00000ff",
+                    "value": "31 mph"
+                },
+                {
+                    "color": "#d70007ff",
+                    "value": "32 mph"
+                },
+                {
+                    "color": "#ce000fff",
+                    "value": "33 mph"
+                },
+                {
+                    "color": "#c50017ff",
+                    "value": "34 mph"
+                },
+                {
+                    "color": "#bc001eff",
+                    "value": "35 mph"
+                },
+                {
+                    "color": "#b30026ff",
+                    "value": "36 mph"
+                },
+                {
+                    "color": "#aa002eff",
+                    "value": "37 mph"
+                },
+                {
+                    "color": "#a10035ff",
+                    "value": "38 mph"
+                },
+                {
+                    "color": "#98003dff",
+                    "value": "39 mph"
+                },
+                {
+                    "color": "#8f0045ff",
+                    "value": "40 mph"
+                },
+                {
+                    "color": "#86004dff",
+                    "value": "41 mph"
+                },
+                {
+                    "color": "#86005cff",
+                    "value": "42 mph"
+                },
+                {
+                    "color": "#87006bff",
+                    "value": "43 mph"
+                },
+                {
+                    "color": "#87007aff",
+                    "value": "44 mph"
+                },
+                {
+                    "color": "#880089ff",
+                    "value": "45 mph"
+                },
+                {
+                    "color": "#880198ff",
+                    "value": "46 mph"
+                },
+                {
+                    "color": "#7a018eff",
+                    "value": "47 mph"
+                },
+                {
+                    "color": "#6b0185ff",
+                    "value": "48 mph"
+                },
+                {
+                    "color": "#5c017cff",
+                    "value": "49 mph"
+                },
+                {
+                    "color": "#4d0173ff",
+                    "value": "50 mph"
+                },
+                {
+                    "color": "#3e016aff",
+                    "value": "51 mph"
+                },
+                {
+                    "color": "#370c78ff",
+                    "value": "52 mph"
+                },
+                {
+                    "color": "#311687ff",
+                    "value": "53 mph"
+                },
+                {
+                    "color": "#2b2096ff",
+                    "value": "54 mph"
+                },
+                {
+                    "color": "#252ba5ff",
+                    "value": "55 mph"
+                },
+                {
+                    "color": "#1e35b4ff",
+                    "value": "56 mph"
+                },
+                {
+                    "color": "#183fc3ff",
+                    "value": "57 mph"
+                },
+                {
+                    "color": "#124ad2ff",
+                    "value": "58 mph"
+                },
+                {
+                    "color": "#0c54e1ff",
+                    "value": "59 mph"
+                },
+                {
+                    "color": "#065ef0ff",
+                    "value": "60 mph"
+                },
+                {
+                    "color": "#0068ffff",
+                    "value": "61 mph"
+                },
+                {
+                    "color": "#0075ffff",
+                    "value": "62 mph"
+                },
+                {
+                    "color": "#0081ffff",
+                    "value": "63 mph"
+                },
+                {
+                    "color": "#008dffff",
+                    "value": "64 mph"
+                },
+                {
+                    "color": "#0099ffff",
+                    "value": "65 mph"
+                },
+                {
+                    "color": "#00a5ffff",
+                    "value": "66 mph"
+                },
+                {
+                    "color": "#00b2ffff",
+                    "value": "67 mph"
+                },
+                {
+                    "color": "#00beffff",
+                    "value": "68 mph"
+                },
+                {
+                    "color": "#00caffff",
+                    "value": "69 mph"
+                },
+                {
+                    "color": "#00d6ffff",
+                    "value": "70 mph"
+                },
+                {
+                    "color": "#00e2ffff",
+                    "value": "71 mph"
+                },
+                {
+                    "color": "#0ce4ffff",
+                    "value": "72 mph"
+                },
+                {
+                    "color": "#19e5ffff",
+                    "value": "73 mph"
+                },
+                {
+                    "color": "#ffff00ff",
+                    "value": "74 mph"
+                },
+                {
+                    "color": "#fff300ff",
+                    "value": "75 mph"
+                },
+                {
+                    "color": "#ffe700ff",
+                    "value": "76 mph"
+                },
+                {
+                    "color": "#ffdc00ff",
+                    "value": "77 mph"
+                },
+                {
+                    "color": "#ffd000ff",
+                    "value": "78 mph"
+                },
+                {
+                    "color": "#ffc400ff",
+                    "value": "79 mph"
+                },
+                {
+                    "color": "#ffb900ff",
+                    "value": "80 mph"
+                },
+                {
+                    "color": "#ffad00ff",
+                    "value": "81 mph"
+                },
+                {
+                    "color": "#ffa200ff",
+                    "value": "82 mph"
+                },
+                {
+                    "color": "#ff9600ff",
+                    "value": "83 mph"
+                },
+                {
+                    "color": "#ff8a00ff",
+                    "value": "84 mph"
+                },
+                {
+                    "color": "#ff7f00ff",
+                    "value": "85 mph"
+                },
+                {
+                    "color": "#ff7300ff",
+                    "value": "86 mph"
+                },
+                {
+                    "color": "#ff6700ff",
+                    "value": "87 mph"
+                },
+                {
+                    "color": "#ff5c00ff",
+                    "value": "88 mph"
+                },
+                {
+                    "color": "#ff5000ff",
+                    "value": "89 mph"
+                },
+                {
+                    "color": "#ff4500ff",
+                    "value": "90 mph"
+                },
+                {
+                    "color": "#ff3900ff",
+                    "value": "91 mph"
+                },
+                {
+                    "color": "#ff2d00ff",
+                    "value": "92 mph"
+                },
+                {
+                    "color": "#ff2200ff",
+                    "value": "93 mph"
+                },
+                {
+                    "color": "#ff1600ff",
+                    "value": "94 mph"
+                },
+                {
+                    "color": "#ff0a00ff",
+                    "value": "95 mph"
+                },
+                {
+                    "color": "#000000ff",
+                    "value": "96 mph"
+                },
+                {
+                    "color": "#121212ff",
+                    "value": "97 mph"
+                },
+                {
+                    "color": "#242424ff",
+                    "value": "98 mph"
+                },
+                {
+                    "color": "#363636ff",
+                    "value": "99 mph"
+                },
+                {
+                    "color": "#484848ff",
+                    "value": "100 mph"
+                },
+                {
+                    "color": "#5b5b5bff",
+                    "value": "101 mph"
+                },
+                {
+                    "color": "#6d6d6dff",
+                    "value": "102 mph"
+                },
+                {
+                    "color": "#7f7f7fff",
+                    "value": "103 mph"
+                },
+                {
+                    "color": "#919191ff",
+                    "value": "104 mph"
+                },
+                {
+                    "color": "#a3a3a3ff",
+                    "value": "105 mph"
+                },
+                {
+                    "color": "#b6b6b6ff",
+                    "value": "106 mph"
+                },
+                {
+                    "color": "#c8c8c8ff",
+                    "value": "107 mph"
+                },
+                {
+                    "color": "#dadadaff",
+                    "value": "108 mph"
+                },
+                {
+                    "color": "#ecececff",
+                    "value": "109 mph"
+                },
+                {
+                    "color": "#ffffffff",
+                    "value": "110 mph"
+                },
+                {
+                    "color": "#800000ff",
+                    "value": "111 mph"
+                },
+                {
+                    "color": "#860d0dff",
+                    "value": "112 mph"
+                },
+                {
+                    "color": "#8d1a1aff",
+                    "value": "113 mph"
+                },
+                {
+                    "color": "#942828ff",
+                    "value": "114 mph"
+                },
+                {
+                    "color": "#9a3535ff",
+                    "value": "115 mph"
+                },
+                {
+                    "color": "#a14343ff",
+                    "value": "116 mph"
+                },
+                {
+                    "color": "#a85050ff",
+                    "value": "117 mph"
+                },
+                {
+                    "color": "#ae5d5dff",
+                    "value": "118 mph"
+                },
+                {
+                    "color": "#b56b6bff",
+                    "value": "119 mph"
+                },
+                {
+                    "color": "#bc7878ff",
+                    "value": "120 mph"
+                },
+                {
+                    "color": "#c28686ff",
+                    "value": "121 mph"
+                },
+                {
+                    "color": "#c99393ff",
+                    "value": "122 mph"
+                },
+                {
+                    "color": "#d0a1a1ff",
+                    "value": "123 mph"
+                },
+                {
+                    "color": "#d6aeaeff",
+                    "value": "124 mph"
+                },
+                {
+                    "color": "#ddbbbbff",
+                    "value": "125 mph"
+                },
+                {
+                    "color": "#e4c9c9ff",
+                    "value": "126 mph"
+                },
+                {
+                    "color": "#ead6d6ff",
+                    "value": "127 mph"
+                },
+                {
+                    "color": "#f1e4e4ff",
+                    "value": "128 mph"
+                },
+                {
+                    "color": "#f8f1f1ff",
+                    "value": "129 mph"
+                },
+                {
+                    "color": "#feffffff",
+                    "value": "130 mph"
+                },
+                {
+                    "color": "#ff00ffff",
+                    "value": "131 mph"
+                },
+                {
+                    "color": "#f700f7ff",
+                    "value": "132 mph"
+                },
+                {
+                    "color": "#ef00efff",
+                    "value": "133 mph"
+                },
+                {
+                    "color": "#e700e7ff",
+                    "value": "134 mph"
+                },
+                {
+                    "color": "#df00dfff",
+                    "value": "135 mph"
+                },
+                {
+                    "color": "#d700d7ff",
+                    "value": "136 mph"
+                },
+                {
+                    "color": "#cf00cfff",
+                    "value": "137 mph"
+                },
+                {
+                    "color": "#c700c7ff",
+                    "value": "138 mph"
+                },
+                {
+                    "color": "#bf00bfff",
+                    "value": "139 mph"
+                },
+                {
+                    "color": "#b700b7ff",
+                    "value": "140 mph"
+                },
+                {
+                    "color": "#af00afff",
+                    "value": "141 mph"
+                },
+                {
+                    "color": "#a700a7ff",
+                    "value": "142 mph"
+                },
+                {
+                    "color": "#9f009fff",
+                    "value": "143 mph"
+                },
+                {
+                    "color": "#970097ff",
+                    "value": "144 mph"
+                },
+                {
+                    "color": "#8f008fff",
+                    "value": "145 mph"
+                },
+                {
+                    "color": "#870087ff",
+                    "value": "146 mph"
+                },
+                {
+                    "color": "#7f007fff",
+                    "value": "147 mph"
+                },
+                {
+                    "color": "#770077ff",
+                    "value": "148 mph"
+                },
+                {
+                    "color": "#6f006fff",
+                    "value": "149 mph"
+                },
+                {
+                    "color": "#670067ff",
+                    "value": "150 mph"
+                },
+                {
+                    "color": "#5f005fff",
+                    "value": "151 mph"
+                },
+                {
+                    "color": "#570057ff",
+                    "value": "152 mph"
+                },
+                {
+                    "color": "#4f004fff",
+                    "value": "153 mph"
+                },
+                {
+                    "color": "#470047ff",
+                    "value": "154 mph"
+                },
+                {
+                    "color": "#3f003fff",
+                    "value": "155 mph"
+                },
+                {
+                    "color": "#ffff00ff",
+                    "value": "156 mph"
+                },
+                {
+                    "color": "#feff02ff",
+                    "value": "157 mph"
+                },
+                {
+                    "color": "#feff05ff",
+                    "value": "158 mph"
+                },
+                {
+                    "color": "#feff07ff",
+                    "value": "159 mph"
+                },
+                {
+                    "color": "#feff0aff",
+                    "value": "160 mph"
+                },
+                {
+                    "color": "#feff0cff",
+                    "value": "161 mph"
+                },
+                {
+                    "color": "#feff0fff",
+                    "value": "162 mph"
+                },
+                {
+                    "color": "#feff12ff",
+                    "value": "163 mph"
+                },
+                {
+                    "color": "#feff14ff",
+                    "value": "164 mph"
+                },
+                {
+                    "color": "#feff17ff",
+                    "value": "165 mph"
+                },
+                {
+                    "color": "#feff19ff",
+                    "value": "166 mph"
+                },
+                {
+                    "color": "#feff1cff",
+                    "value": "167 mph"
+                },
+                {
+                    "color": "#feff1eff",
+                    "value": "168 mph"
+                },
+                {
+                    "color": "#feff21ff",
+                    "value": "169 mph"
+                },
+                {
+                    "color": "#feff24ff",
+                    "value": "170 mph"
+                },
+                {
+                    "color": "#feff26ff",
+                    "value": "171 mph"
+                },
+                {
+                    "color": "#feff29ff",
+                    "value": "172 mph"
+                },
+                {
+                    "color": "#feff2bff",
+                    "value": "173 mph"
+                },
+                {
+                    "color": "#feff2eff",
+                    "value": "174 mph"
+                },
+                {
+                    "color": "#feff30ff",
+                    "value": "175 mph"
+                },
+                {
+                    "color": "#feff33ff",
+                    "value": "176 mph"
+                },
+                {
+                    "color": "#feff36ff",
+                    "value": "177 mph"
+                },
+                {
+                    "color": "#feff38ff",
+                    "value": "178 mph"
+                },
+                {
+                    "color": "#feff3bff",
+                    "value": "179 mph"
+                },
+                {
+                    "color": "#feff3dff",
+                    "value": "180 mph"
+                },
+                {
+                    "color": "#feff40ff",
+                    "value": "181 mph"
+                },
+                {
+                    "color": "#feff42ff",
+                    "value": "182 mph"
+                },
+                {
+                    "color": "#feff45ff",
+                    "value": "183 mph"
+                },
+                {
+                    "color": "#feff48ff",
+                    "value": "184 mph"
+                },
+                {
+                    "color": "#feff4aff",
+                    "value": "185 mph"
+                },
+                {
+                    "color": "#feff4dff",
+                    "value": "186 mph"
+                },
+                {
+                    "color": "#feff4fff",
+                    "value": "187 mph"
+                },
+                {
+                    "color": "#feff52ff",
+                    "value": "188 mph"
+                },
+                {
+                    "color": "#feff55ff",
+                    "value": "189 mph"
+                },
+                {
+                    "color": "#feff57ff",
+                    "value": "190 mph"
+                },
+                {
+                    "color": "#feff5aff",
+                    "value": "191 mph"
+                },
+                {
+                    "color": "#feff5cff",
+                    "value": "192 mph"
+                },
+                {
+                    "color": "#feff5fff",
+                    "value": "193 mph"
+                },
+                {
+                    "color": "#feff61ff",
+                    "value": "194 mph"
+                },
+                {
+                    "color": "#feff64ff",
+                    "value": "195 mph"
+                },
+                {
+                    "color": "#feff67ff",
+                    "value": "196 mph"
+                },
+                {
+                    "color": "#feff69ff",
+                    "value": "197 mph"
+                },
+                {
+                    "color": "#feff6cff",
+                    "value": "198 mph"
+                },
+                {
+                    "color": "#feff6eff",
+                    "value": "199 mph"
+                },
+                {
+                    "color": "#feff71ff",
+                    "value": "200 mph"
+                },
+                {
+                    "color": "#feff73ff",
+                    "value": "201 mph"
+                },
+                {
+                    "color": "#feff76ff",
+                    "value": "202 mph"
+                },
+                {
+                    "color": "#feff79ff",
+                    "value": "203 mph"
+                },
+                {
+                    "color": "#feff7bff",
+                    "value": "204 mph"
+                },
+                {
+                    "color": "#feff7eff",
+                    "value": "205 mph"
+                },
+                {
+                    "color": "#feff80ff",
+                    "value": "206 mph"
+                },
+                {
+                    "color": "#feff83ff",
+                    "value": "207 mph"
+                },
+                {
+                    "color": "#feff85ff",
+                    "value": "208 mph"
+                },
+                {
+                    "color": "#feff88ff",
+                    "value": "209 mph"
+                },
+                {
+                    "color": "#feff8bff",
+                    "value": "210 mph"
+                },
+                {
+                    "color": "#feff8dff",
+                    "value": "211 mph"
+                },
+                {
+                    "color": "#feff90ff",
+                    "value": "212 mph"
+                },
+                {
+                    "color": "#feff92ff",
+                    "value": "213 mph"
+                },
+                {
+                    "color": "#feff95ff",
+                    "value": "214 mph"
+                },
+                {
+                    "color": "#feff97ff",
+                    "value": "215 mph"
+                },
+                {
+                    "color": "#feff9aff",
+                    "value": "216 mph"
+                },
+                {
+                    "color": "#feff9dff",
+                    "value": "217 mph"
+                },
+                {
+                    "color": "#feff9fff",
+                    "value": "218 mph"
+                },
+                {
+                    "color": "#feffa2ff",
+                    "value": "219 mph"
+                },
+                {
+                    "color": "#feffa4ff",
+                    "value": "220 mph"
+                },
+                {
+                    "color": "#feffa7ff",
+                    "value": "221 mph"
+                },
+                {
+                    "color": "#feffa9ff",
+                    "value": "222 mph"
+                },
+                {
+                    "color": "#feffacff",
+                    "value": "223 mph"
+                },
+                {
+                    "color": "#feffafff",
+                    "value": "224 mph"
+                },
+                {
+                    "color": "#feffb1ff",
+                    "value": "225 mph"
+                },
+                {
+                    "color": "#feffb4ff",
+                    "value": "226 mph"
+                },
+                {
+                    "color": "#feffb6ff",
+                    "value": "227 mph"
+                },
+                {
+                    "color": "#feffb9ff",
+                    "value": "228 mph"
+                },
+                {
+                    "color": "#feffbcff",
+                    "value": "229 mph"
+                },
+                {
+                    "color": "#feffbeff",
+                    "value": "230 mph"
+                },
+                {
+                    "color": "#feffc1ff",
+                    "value": "231 mph"
+                },
+                {
+                    "color": "#feffc3ff",
+                    "value": "232 mph"
+                },
+                {
+                    "color": "#feffc6ff",
+                    "value": "233 mph"
+                },
+                {
+                    "color": "#feffc8ff",
+                    "value": "234 mph"
+                },
+                {
+                    "color": "#feffcbff",
+                    "value": "235 mph"
+                },
+                {
+                    "color": "#feffceff",
+                    "value": "236 mph"
+                },
+                {
+                    "color": "#feffd0ff",
+                    "value": "237 mph"
+                },
+                {
+                    "color": "#feffd3ff",
+                    "value": "238 mph"
+                },
+                {
+                    "color": "#feffd5ff",
+                    "value": "239 mph"
+                },
+                {
+                    "color": "#feffd8ff",
+                    "value": "240 mph"
+                },
+                {
+                    "color": "#feffdaff",
+                    "value": "241 mph"
+                },
+                {
+                    "color": "#feffddff",
+                    "value": "242 mph"
+                },
+                {
+                    "color": "#feffe0ff",
+                    "value": "243 mph"
+                },
+                {
+                    "color": "#feffe2ff",
+                    "value": "244 mph"
+                },
+                {
+                    "color": "#feffe5ff",
+                    "value": "245 mph"
+                },
+                {
+                    "color": "#feffe7ff",
+                    "value": "246 mph"
+                },
+                {
+                    "color": "#feffeaff",
+                    "value": "247 mph"
+                },
+                {
+                    "color": "#feffecff",
+                    "value": "248 mph"
+                },
+                {
+                    "color": "#feffefff",
+                    "value": "249 mph"
+                },
+                {
+                    "color": "#fefff2ff",
+                    "value": "250 mph"
+                },
+                {
+                    "color": "#fefff4ff",
+                    "value": "251 mph"
+                },
+                {
+                    "color": "#fefff7ff",
+                    "value": "252 mph"
+                },
+                {
+                    "color": "#fefff9ff",
+                    "value": "253 mph"
+                },
+                {
+                    "color": "#fefffcff",
+                    "value": "254 mph"
+                },
+                {
+                    "color": "#fdfffeff",
+                    "value": "255 mph"
+                }
+            ]
+        }
+    ]
+}

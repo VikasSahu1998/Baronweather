@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { GrapicalmapComponent } from './grapicalmap.component';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 describe('GrapicalmapComponent', () => {
   let component: GrapicalmapComponent;
@@ -8,9 +9,9 @@ describe('GrapicalmapComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GrapicalmapComponent]
+      imports: [GrapicalmapComponent, HttpClientModule, FormsModule]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(GrapicalmapComponent);
     component = fixture.componentInstance;

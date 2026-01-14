@@ -12,16 +12,17 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './grapical-forecastmap.component.scss'
 })
 export class GrapicalForecastmapComponent {
- map!: L.Map;
+  map!: L.Map;
   private key = 'GTt8Njnc3Z7P';
   private secret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';
   private wmsBaseUrl = 'https://api.velocityweather.com/v1';
-  private productCode = 'wafs-hires-turbulence-fl450'; // Forecast Product Code
+  // private productCode = 'wafs-hires-icing-fl240'; 
+  private productCode = 'wafs-hires-turbulence-fl300';
   private configurationCode = 'Standard-Mercator';
   private latestIssueTime: string = ''; // Issue time (when forecast was made)
   private latestValidTime: string = ''; // Valid time (future forecasted time)
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   ngAfterViewInit(): void {
     this.initMap();
@@ -121,7 +122,7 @@ export class GrapicalForecastmapComponent {
 
   private async getTimeStepsFromProductInstances(timestamp: string, signature: string): Promise<void> {
     const instancesUrl = `${this.wmsBaseUrl}/${this.key}/meta/tiles/product-instances/${this.productCode}/${this.configurationCode}.json?ts=${timestamp}&sig=${signature}`;
-    
+
     console.log("Product Instances URL:", instancesUrl);
 
     const response: any = await this.http.get(instancesUrl).toPromise();
@@ -174,40 +175,40 @@ export class GrapicalForecastmapComponent {
   private parseTimeSteps(response: string): { issueTime: string, validTime: string } | null {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(response, 'application/xml');
-    
+
     // Get all Layer elements
     const layers = xmlDoc.getElementsByTagName('Layer');
 
     // Look for layers with Name elements (these are requestable layers)
     for (let i = 0; i < layers.length; i++) {
       const nameElement = layers[i].getElementsByTagName('Name')[0];
-      
+
       if (nameElement) {
         const issueTime = nameElement.textContent?.trim();
-        
+
         // Look for Dimension element with name="time" within this layer
         const dimensions = layers[i].getElementsByTagName('Dimension');
-        
+
         for (let j = 0; j < dimensions.length; j++) {
           const dimension = dimensions[j];
-          
+
           if (dimension.getAttribute('name') === 'time') {
             const timeValues = dimension.textContent?.trim();
-            
+
             if (timeValues && issueTime) {
               // Time values are comma-separated, get the first (most recent) one
               const validTimes = timeValues.split(',').map(t => t.trim()).filter(t => t.length > 0);
-              
+
               // Filter out non-ISO8601 values (should start with a year like "20")
               const validIsoTimes = validTimes.filter(t => /^\d{4}-/.test(t));
-              
+
               if (validIsoTimes.length > 0) {
                 const validTime = validIsoTimes[0]; // Most recent valid time
-                
+
                 console.log("Found Issue Time:", issueTime);
                 console.log("Found Valid Times:", validIsoTimes);
                 console.log("Using Valid Time:", validTime);
-                
+
                 return { issueTime, validTime };
               }
             }

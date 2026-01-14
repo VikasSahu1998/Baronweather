@@ -1,162 +1,283 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import * as L from 'leaflet';
-import * as CryptoJS from 'crypto-js'; // Importing from crypto-js
-import { HttpClient } from '@angular/common/http'; // Import HttpClient for API calls
+import * as CryptoJS from 'crypto-js';
+import { HttpClient } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+
+interface WindLegendEntry {
+  color: string;
+  value: string;
+  speed: number;
+}
 
 @Component({
   selector: 'app-grapicalmap',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './grapicalmap.component.html',
-  styleUrls: ['./grapicalmap.component.scss']
+  styleUrls: ['./grapicalmap.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class GrapicalmapComponent {
+export class GrapicalmapComponent implements OnInit {
   map!: L.Map;
-  private key = 'GTt8Njnc3Z7P';  // Your API key
-  private secret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';  // Your API secret
-  private wmsBaseUrl = 'https://api.velocityweather.com/v1';
-  private productCode = 'wafs-hires-icing-fl060'; // Example Product Code
-  private configurationCode = 'Standard-Mercator'; // Example Config Code
-  private latestTimeStep: string = ''; // Store latest time step
 
-  constructor(private http: HttpClient) {} // Inject HttpClient
+  private key = 'GTt8Njnc3Z7P';
+  private secret = 'JqbpMSopmwISsVBWvyEmywPEbePUoW6lkbxGH0h1Um';
+  private wmsBaseUrl = 'https://api.velocityweather.com/v1';
+
+  productCodes = [
+    { name: 'Wind Speed Near Surface', value: 'gfs-windspeed-mph-10meter' },
+    { name: 'Temperature (2m)', value: 'gfs-temp-f-2meter' },
+    { name: 'Wind/Temp (3kft)', value: 'gfs-halfdeg-winduv-temp-c-3kft-msl' },
+    { name: 'Volcanic Eruption', value: 'volcanic-eruption' }
+  ];
+
+  productCode = this.productCodes[0].value;
+  private configurationCode = 'Standard-Mercator';
+
+  private latestTimeStep = '';
+  private wmsLayer?: L.TileLayer.WMS;
+  private legendControl?: L.Control;
+
+  windSpeedLegend: WindLegendEntry[] = [];
+  displayedLegend: WindLegendEntry[] = [];
+  showFullLegend = false;
+
+  // Time Scale Properties
+  forecastTimes: string[] = [];
+  selectedTime = '';
+  isPlaying = false;
+  private animationInterval: any;
+
+  constructor(private http: HttpClient) { }
+
+  ngOnInit(): void {
+    this.loadWindSpeedLegend();
+  }
 
   ngAfterViewInit(): void {
     this.initMap();
   }
 
+  /* ---------------- MAP INIT ---------------- */
+
   initMap(): void {
-    this.map = L.map('map', { zoomControl: false, attributionControl: false }).setView([20.5937, 78.9629], 5);
+    this.map = L.map('map', { zoomControl: false, attributionControl: false })
+      .setView([20.5937, 78.9629], 5);
 
-    // Define your base layers
     const streets = L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-      subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-    });
+      subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    }).addTo(this.map);
 
-    const darkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {});
-    const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {});
-    const navigation = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-      maxZoom: 16
-    });
-  
-    this.getAvailableTimeSteps().then(() => {
-      this.addWmsLayer();  // Add WMS layer once the time steps are available
-    });
+    const darkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
+    const satellite = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+    );
+    const navigation = L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
+    );
 
-    const baseMaps = {
-      'Streets': streets,
-      'Satellite': satellite,
-      'Navigation': navigation,
-      'Dark': darkMatter,
-    };
+    L.control.layers(
+      {
+        Streets: streets,
+        Satellite: satellite,
+        Navigation: navigation,
+        Dark: darkMatter
+      },
+      {},
+      { position: 'topleft' }
+    ).addTo(this.map);
 
-    // Control for layers
-    L.control.layers(baseMaps, {}, { position: 'topleft' }).addTo(this.map);
-    streets.addTo(this.map);
     L.control.scale({ position: 'bottomright', metric: false }).addTo(this.map);
     L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+
+    this.legendControl = new L.Control({ position: 'bottomleft' });
+    this.legendControl.onAdd = () => {
+      const div = L.DomUtil.create('div', 'legend');
+      div.style.display = 'none'; // Hide default leaflet legend
+      return div;
+    };
+    this.legendControl.addTo(this.map);
+
+    this.updateWmsLayer();
   }
 
-  private addWmsLayer(): void {
-    if (!this.latestTimeStep || this.latestTimeStep === '') {
-      console.error("No valid time step available to add WMS layer.");
-      return; // Exit the function if latestTimeStep is undefined or empty
-    }
-  
-    const timeStep = this.latestTimeStep; // Use the dynamically fetched time step
-    const timestamp = Math.floor(Date.now() / 1000).toString(); // Get the current timestamp in seconds
-    const signature = this.signRequest(this.key, timestamp); // Generate the HMAC signature
-  
-    // Construct the WMS URL with only necessary parameters
-    const wmsUrl = `${this.wmsBaseUrl}/${this.key}/wms/${this.productCode}/${this.configurationCode}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetMap&CRS=EPSG:3857&LAYERS=${timeStep}&BBOX=-19000030.25383,-747262.291898,-2929909.4293921,1042110.4783351&WIDTH=256&HEIGHT=256&TIME=${timeStep}&ts=${timestamp}&sig=${signature}&FORMAT=image/png&TRANSPARENT=true`;
-  
-    // Log the URL for debugging
-    console.log("Updated WMS URL:", wmsUrl);
-  
-    // Create WMS Layer with the correct URL and avoid setting duplicate parameters
-    const wmsLayer = L.tileLayer.wms(wmsUrl, {
-      format: 'image/png',
-      version:'1.3.0',
-      transparent: true,
-      layers:`${timeStep}`,
-      attribution: '© Velocity Weather',
-      crs: L.CRS.EPSG3857
-    });
-  
-    // Add WMS layer to the map
-    wmsLayer.addTo(this.map);
+  /* ---------------- PRODUCT CHANGE ---------------- */
+
+  onProductChange(event: Event): void {
+    this.productCode = (event.target as HTMLSelectElement).value;
+    this.forecastTimes = [];
+    this.selectedTime = '';
+    this.updateWmsLayer();
   }
-  
+
+  /* ---------------- TIME CONTROL ---------------- */
+
+  onTimeChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.selectedTime = target.value;
+    this.addWmsLayer(); // Refresh layer with new time
+  }
+
+  get displayedTime(): string {
+    if (!this.selectedTime) return '';
+    const date = new Date(this.selectedTime);
+    return isNaN(date.getTime()) ? '' : date.toLocaleString();
+  }
+
+  toggleAnimation(): void {
+    if (this.isPlaying) {
+      clearInterval(this.animationInterval);
+      this.isPlaying = false;
+    } else {
+      this.isPlaying = true;
+      const currentIndex = this.forecastTimes.indexOf(this.selectedTime);
+      let nextIndex = currentIndex + 1;
+
+      this.animationInterval = setInterval(() => {
+        if (nextIndex >= this.forecastTimes.length) {
+          nextIndex = 0;
+        }
+        this.selectedTime = this.forecastTimes[nextIndex];
+        this.addWmsLayer();
+        nextIndex++;
+      }, 2000); // Change every 2 seconds
+    }
+  }
+
+  /* ---------------- WMS LAYER ---------------- */
+
+  private async updateWmsLayer(): Promise<void> {
+    await this.getAvailableTimeSteps();
+
+    if (this.wmsLayer) {
+      this.map.removeLayer(this.wmsLayer);
+    }
+
+    this.addWmsLayer();
+    this.updateDisplayedLegend();
+  }
+
+  public addWmsLayer(): void {
+    if (!this.latestTimeStep) return;
+
+    // Use selected forecast time if available, otherwise fallback to model run time (latestTimeStep)
+    // IMPORTANT: For forecast products, TIME parameter is crucial.
+    const timeParam = this.selectedTime || this.latestTimeStep;
+
+    const ts = Math.floor(Date.now() / 1000).toString();
+    const sig = this.signRequest(this.key, ts);
+
+    const url = `${this.wmsBaseUrl}/${this.key}/wms/${this.productCode}/${this.configurationCode}` +
+      `?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap` +
+      `&CRS=EPSG:3857&LAYERS=${this.latestTimeStep}` +
+      `&WIDTH=256&HEIGHT=256&FORMAT=image/png&TRANSPARENT=true` +
+      `&TIME=${timeParam}&ts=${ts}&sig=${sig}`;
+
+    // Remove existing layer if adding a new one to update time
+    if (this.wmsLayer) {
+      this.map.removeLayer(this.wmsLayer);
+    }
+
+    this.wmsLayer = L.tileLayer.wms(url, {
+      layers: this.latestTimeStep,
+      format: 'image/png',
+      transparent: true,
+      version: '1.3.0'
+    });
+
+    this.wmsLayer.addTo(this.map);
+  }
+
+  /* ---------------- CUSTOM LEGEND ---------------- */
+
+  private updateDisplayedLegend(): void {
+    if (this.productCode === 'gfs-windspeed-mph-10meter' && this.windSpeedLegend.length > 0) {
+      // Show only key values for better readability
+      const keyValues = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 255];
+      this.displayedLegend = this.windSpeedLegend.filter(entry => {
+        const speed = parseInt(entry.value.replace(' mph', ''));
+        return keyValues.includes(speed);
+      });
+
+      if (!this.showFullLegend) {
+        // For collapsed view, show even fewer values
+        const collapsedValues = [0, 10, 20, 30, 50, 70, 100, 150, 200, 255];
+        this.displayedLegend = this.windSpeedLegend.filter(entry => {
+          const speed = parseInt(entry.value.replace(' mph', ''));
+          return collapsedValues.includes(speed);
+        });
+      }
+    } else {
+      this.displayedLegend = [];
+    }
+  }
+
+  toggleLegendView(): void {
+    this.showFullLegend = !this.showFullLegend;
+    this.updateDisplayedLegend();
+  }
+
+  /* ---------------- LOAD LEGEND JSON ---------------- */
+
+  private loadWindSpeedLegend(): void {
+    this.http
+      .get<any>('Wind Speed Near Surface/Wind Speed Near Surface.json')
+      .subscribe(res => {
+        if (res.palettes && res.palettes[0] && res.palettes[0].entries) {
+          this.windSpeedLegend = res.palettes[0].entries.map((entry: any) => ({
+            color: entry.color,
+            value: entry.value,
+            speed: parseInt(entry.value.replace(' mph', ''))
+          }));
+          this.updateDisplayedLegend();
+        }
+      });
+  }
+
+  /* ---------------- TIME STEPS ---------------- */
 
   private async getAvailableTimeSteps(): Promise<void> {
-    const timestamp = Math.floor(Date.now() / 1000).toString(); // Current timestamp in seconds
-    const signature = this.signRequest(this.key, timestamp);
+    const ts = Math.floor(Date.now() / 1000).toString();
+    const sig = this.signRequest(this.key, ts);
 
-    // Build the GetCapabilities URL
-    const capabilitiesUrl = `${this.wmsBaseUrl}/${this.key}/wms/${this.productCode}/${this.configurationCode}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetCapabilities&ts=${timestamp}&sig=${signature}`;
-
-    // Log the URL for debugging
-    console.log("GetCapabilities URL:", capabilitiesUrl);
+    // Switch to Product Instances API (JSON) as it provides reliable valid_times
+    const url = `${this.wmsBaseUrl}/${this.key}/meta/tiles/product-instances/${this.productCode}/${this.configurationCode}.json` +
+      `?ts=${ts}&sig=${sig}`;
 
     try {
-      // Fetch the response, ensuring it's not undefined
-      const response: string | undefined = await this.http.get(capabilitiesUrl, { responseType: 'text' }).toPromise();
+      const res: any[] = await this.http.get<any[]>(url).toPromise() || [];
 
-      if (response) { // Ensure the response is defined before passing it to parseTimeStep
-        const parsedResult = this.parseTimeStep(response); // Extract the issue time and time step
+      if (res && res.length > 0) {
+        const latestInstance = res[0];
+        this.latestTimeStep = latestInstance.time;
 
-        if (parsedResult && parsedResult.timeStep) {
-          // If parsedResult is not undefined, assign its timeStep to latestTimeStep
-          this.latestTimeStep = parsedResult.timeStep; // Ensure latestTimeStep is a string
-          console.log("Latest Time Step:", this.latestTimeStep);
+        if (latestInstance.valid_times && Array.isArray(latestInstance.valid_times)) {
+          // efficient way to reverse-chronological -> chronological
+          this.forecastTimes = [...latestInstance.valid_times].reverse();
+
+          if (this.forecastTimes.length > 0) {
+            this.selectedTime = this.forecastTimes[0];
+          }
         } else {
-          console.error("No valid time step found in the response.");
-          this.latestTimeStep = '';  // Assign a default value if needed
+          this.forecastTimes = [];
+          this.selectedTime = '';
         }
-      } else {
-        console.error("Empty or undefined response received from GetCapabilities request.");
       }
+
     } catch (error) {
-      console.error("Error fetching capabilities:", error); // Log error details
+      console.error('Error fetching time steps:', error);
     }
   }
 
-  private parseTimeStep(response: string): { issueTime: string, timeStep: string } {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(response, 'application/xml');
-    const layers = xmlDoc.getElementsByTagName('Layer');
+  /* ---------------- SIGNATURE ---------------- */
 
-    if (layers.length > 0) {
-      // Extracting the most recent layer for issue time and time step
-      const firstLayer = layers[0];
-      const nameElement = firstLayer.getElementsByTagName('Name')[0];  // Issue time
-      const issueTime = nameElement?.textContent?.trim() || '';
-
-      // Collecting the time steps from the subsequent layers
-      const timeSteps: string[] = [];
-      for (let i = 0; i < layers.length; i++) {
-        const layerName = layers[i].getElementsByTagName('Name')[0]?.textContent?.trim();
-        if (layerName) {
-          timeSteps.push(layerName);
-        }
-      }
-
-      // Returning the issue time and the first time step, or a default if empty
-      return { issueTime: issueTime || 'default-issue-time', timeStep: timeSteps[0] || 'default-time-step' };
-    }
-
-    console.error('No layers found in GetCapabilities response');
-    return { issueTime: 'default-issue-time', timeStep: 'default-time-step' };  // Return default values in case of failure
-  }
-
-  private signRequest(key: string, timestamp: string): string {
-    const message = `${key}:${timestamp}`;
-    const hash = CryptoJS.HmacSHA1(message, this.secret);
-    const base64Signature = CryptoJS.enc.Base64.stringify(hash);
-    const modifiedSignature = base64Signature.replace(/\//g, '_').replace(/\+/g, '-');
-    console.log("Generated Signature:", modifiedSignature); // Log the generated signature
-    return modifiedSignature;
+  private signRequest(key: string, ts: string): string {
+    return CryptoJS.enc.Base64.stringify(
+      CryptoJS.HmacSHA1(`${key}:${ts}`, this.secret)
+    )
+      .replace(/\//g, '_')
+      .replace(/\+/g, '-');
   }
 }

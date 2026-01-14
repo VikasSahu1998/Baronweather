@@ -5,5 +5,6 @@ import { GrapicalForecastmapComponent } from './grapical-forecastmap/grapical-fo
 
 export const routes: Routes = [
     { path: '', redirectTo: '', pathMatch: 'full' }, 
-    { path: '', component: GrapicalForecastmapComponent },
+    { path: '', component: GrapicalmapComponent },
+    //  { path: '', component: GrapicalForecastmapComponent },
 ];
