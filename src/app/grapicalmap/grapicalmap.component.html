@@ -11,6 +11,13 @@
     </div>
   </div>
 
+  <!-- Altitude Slider for Wind/Temp -->
+  <div *ngIf="isWindTempSelected" class="altitude-selector">
+    <label for="altitude">Altitude: {{ selectedAltitude }}k ft</label>
+    <input type="range" id="altitude" min="1" max="51" step="1" [value]="selectedAltitude"
+      (input)="onAltitudeChange($event)" />
+  </div>
+
   <!-- Map -->
   <div id="map"></div>
 

@@ -29,21 +29,20 @@ export class GrapicalmapComponent implements OnInit {
   productCodes = [
     { name: 'Wind Speed Near Surface', value: 'gfs-windspeed-mph-10meter' },
     { name: 'Temperature (2m)', value: 'gfs-temp-f-2meter' },
-    { name: 'Wind/Temp (3kft)', value: 'gfs-halfdeg-winduv-temp-c-3kft-msl' },
+    { name: 'Wind/Temp', value: 'gfs-halfdeg-winduv-temp-c-kft-msl' },
     { name: 'Volcanic Eruption', value: 'volcanic-eruption' }
   ];
 
   productCode = this.productCodes[0].value;
+  selectedAltitude = 3; // Default to 3k feet
   private configurationCode = 'Standard-Mercator';
 
   private latestTimeStep = '';
   private wmsLayer?: L.TileLayer.WMS;
   private legendControl?: L.Control;
-
   windSpeedLegend: WindLegendEntry[] = [];
   displayedLegend: WindLegendEntry[] = [];
   showFullLegend = false;
-
   // Time Scale Properties
   forecastTimes: string[] = [];
   selectedTime = '';
@@ -63,6 +62,10 @@ export class GrapicalmapComponent implements OnInit {
 
   ngAfterViewInit(): void {
     this.initMap();
+  }
+
+  get isWindTempSelected(): boolean {
+    return this.productCode === 'gfs-halfdeg-winduv-temp-c-kft-msl';
   }
 
   /* ---------------- MAP INIT ---------------- */
@@ -121,6 +124,12 @@ export class GrapicalmapComponent implements OnInit {
     this.updateWmsLayer();
   }
 
+  onAltitudeChange(event: Event): void {
+    const newAltitude = parseInt((event.target as HTMLInputElement).value, 10);
+    this.selectedAltitude = newAltitude;
+    this.updateWmsLayer();
+  }
+
   /* ---------------- TIME CONTROL ---------------- */
 
   onTimeChange(event: Event): void {
@@ -170,6 +179,13 @@ export class GrapicalmapComponent implements OnInit {
     this.updateDisplayedLegend();
   }
 
+  private getCurrentProductCode(): string {
+    if (this.isWindTempSelected) {
+      return `gfs-halfdeg-winduv-temp-c-${this.selectedAltitude}kft-msl`;
+    }
+    return this.productCode;
+  }
+
   public addWmsLayer(): void {
     if (!this.latestTimeStep) return;
 
@@ -179,8 +195,9 @@ export class GrapicalmapComponent implements OnInit {
 
     const ts = Math.floor(Date.now() / 1000).toString();
     const sig = this.signRequest(this.key, ts);
+    const currentProduct = this.getCurrentProductCode();
 
-    const url = `${this.wmsBaseUrl}/${this.key}/wms/${this.productCode}/${this.configurationCode}` +
+    const url = `${this.wmsBaseUrl}/${this.key}/wms/${currentProduct}/${this.configurationCode}` +
       `?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap` +
       `&CRS=EPSG:3857&LAYERS=${this.latestTimeStep}` +
       `&WIDTH=256&HEIGHT=256&FORMAT=image/png&TRANSPARENT=true` +
@@ -355,9 +372,10 @@ export class GrapicalmapComponent implements OnInit {
   private async getAvailableTimeSteps(): Promise<void> {
     const ts = Math.floor(Date.now() / 1000).toString();
     const sig = this.signRequest(this.key, ts);
+    const currentProduct = this.getCurrentProductCode();
 
     // Switch to Product Instances API (JSON) as it provides reliable valid_times
-    const url = `${this.wmsBaseUrl}/${this.key}/meta/tiles/product-instances/${this.productCode}/${this.configurationCode}.json` +
+    const url = `${this.wmsBaseUrl}/${this.key}/meta/tiles/product-instances/${currentProduct}/${this.configurationCode}.json` +
       `?ts=${ts}&sig=${sig}`;
 
     try {
