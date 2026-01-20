@@ -18,6 +18,24 @@
       (input)="onAltitudeChange($event)" />
   </div>
 
+  <!-- Temperature Unit Selector -->
+  <div *ngIf="isTemperatureSelected" class="temperature-unit-selector">
+    <div class="unit-buttons">
+      <button class="unit-btn" 
+        [class.active]="selectedTemperatureUnit === 'F'"
+        (click)="onTemperatureUnitChange('F')"
+        title="Fahrenheit">
+        °F
+      </button>
+      <button class="unit-btn" 
+        [class.active]="selectedTemperatureUnit === 'C'"
+        (click)="onTemperatureUnitChange('C')"
+        title="Celsius">
+        °C
+      </button>
+    </div>
+  </div>
+
   <!-- Map -->
   <div id="map"></div>
 
@@ -27,12 +45,12 @@
       <div class="legend-values">
         <!-- Show high values at top (reverse order of gradient which is to top) -->
         <div *ngFor="let entry of displayedLegend.slice().reverse()" class="legend-label">
-          {{ entry.value.replace(' mph', '') }}
+          {{ entry.value.replace(' mph', '').replace(' °F', '').replace(' °C', '') }}
         </div>
       </div>
       <div class="legend-bar" [style.background-image]="gradientStyle"></div>
     </div>
-    <div class="legend-title">mph</div>
+    <div class="legend-title">{{ legendTitle }}</div>
   </div>
 
   <!-- Time Control (Bottom Bar) -->
@@ -69,16 +87,36 @@
     <div class="control-group center timeline-wrapper">
       <div class="timeline-track">
         <input type="range" [min]="0" [max]="currentDayTimes.length - 1" [value]="currentIndex"
-          (input)="onTimelineInput($event)" class="timeline-slider">
+          (input)="onTimelineInput($event)" 
+          (mouseenter)="onTimelineHoverStart()"
+          (mousemove)="onTimelineHover($event)"
+          (mouseleave)="onTimelineHoverEnd()"
+          class="timeline-slider">
+
+        <!-- Hover Time Tooltip -->
+        <div class="hover-time-tooltip" *ngIf="isHoveringTimeline && hoverTime" 
+          [style.left.%]="hoverPosition">
+          {{ hoverTime }}
+        </div>
 
         <div class="timeline-ticks">
-          <!-- Show fewer ticks to avoid crowding -->
+          <!-- Render a tick for EVERY 30-min interval -->
           <ng-container *ngFor="let time of currentDayTimes; let i = index">
-            <div *ngIf="i % 4 === 0" class="tick" [style.left.%]="(i / (currentDayTimes.length - 1)) * 100">
+            <!-- Position based on index -->
+            <div class="tick" [class.major]="i % 4 === 0" [class.minor]="i % 2 === 0 && i % 4 !== 0"
+              [style.left.%]="(i / (currentDayTimes.length - 1)) * 100">
               <div class="tick-mark"></div>
-              <span class="tick-label">{{ formatTickTime(time) }}</span>
+              <!-- Only label every 2 hours (every 4th 30-min slot) -->
+              <span *ngIf="i % 4 === 0" class="tick-label">{{ formatTickTime(time) }}</span>
             </div>
           </ng-container>
+
+          <!-- Current Time Indicator -->
+          <div class="current-time-indicator" [style.left.%]="currentTimePosition"
+            *ngIf="currentTimePosition > 0 && currentTimePosition < 100">
+            <div class="indicator-triangle"></div>
+            <div class="indicator-line"></div>
+          </div>
         </div>
       </div>
     </div>

@@ -10,6 +10,12 @@ interface WindLegendEntry {
   value: string;
   speed: number;
 }
+interface TemperatureLegendEntry {
+  color: string;
+  value: string;
+  temperature: number;
+}
+
 
 @Component({
   selector: 'app-grapicalmap',
@@ -41,11 +47,17 @@ export class GrapicalmapComponent implements OnInit {
   private wmsLayer?: L.TileLayer.WMS;
   private legendControl?: L.Control;
   windSpeedLegend: WindLegendEntry[] = [];
-  displayedLegend: WindLegendEntry[] = [];
+  temperatureLegend: TemperatureLegendEntry[] = [];
+  displayedLegend: (WindLegendEntry | TemperatureLegendEntry)[] = [];
+  legendTitle = '';
   showFullLegend = false;
+  selectedTemperatureUnit: 'C' | 'F' = 'F'; // Default to Fahrenheit
   // Time Scale Properties
   forecastTimes: string[] = [];
+  validServerTimes: string[] = []; // Store actual valid times from server
   selectedTime = '';
+
+
   isPlaying = false;
   private animationInterval: any;
 
@@ -54,10 +66,16 @@ export class GrapicalmapComponent implements OnInit {
   selectedDate = '';
   showCalendar = false;
 
+  // Hover Time Display Properties
+  hoverTime = '';
+  isHoveringTimeline = false;
+  hoverPosition = 0;
+
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
     this.loadWindSpeedLegend();
+    this.loadTemperatureLegend();
   }
 
   ngAfterViewInit(): void {
@@ -66,6 +84,18 @@ export class GrapicalmapComponent implements OnInit {
 
   get isWindTempSelected(): boolean {
     return this.productCode === 'gfs-halfdeg-winduv-temp-c-kft-msl';
+  }
+
+  get isTemperatureSelected(): boolean {
+    return this.productCode === 'gfs-temp-f-2meter';
+  }
+
+  private celsiusToFahrenheit(celsius: number): number {
+    return Math.round((celsius * 9 / 5) + 32);
+  }
+
+  private fahrenheitToCelsius(fahrenheit: number): number {
+    return Math.round((fahrenheit - 32) * 5 / 9);
   }
 
   /* ---------------- MAP INIT ---------------- */
@@ -130,6 +160,11 @@ export class GrapicalmapComponent implements OnInit {
     this.updateWmsLayer();
   }
 
+  onTemperatureUnitChange(unit: 'C' | 'F'): void {
+    this.selectedTemperatureUnit = unit;
+    this.updateDisplayedLegend();
+  }
+
   /* ---------------- TIME CONTROL ---------------- */
 
   onTimeChange(event: Event): void {
@@ -141,7 +176,9 @@ export class GrapicalmapComponent implements OnInit {
   get displayedTime(): string {
     if (!this.selectedTime) return '';
     const date = new Date(this.selectedTime);
-    return isNaN(date.getTime()) ? '' : date.toLocaleString();
+    if (isNaN(date.getTime())) return '';
+    // Format as UTC time in ISO format
+    return date.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
   }
 
   toggleAnimation(): void {
@@ -189,9 +226,20 @@ export class GrapicalmapComponent implements OnInit {
   public addWmsLayer(): void {
     if (!this.latestTimeStep) return;
 
-    // Use selected forecast time if available, otherwise fallback to model run time (latestTimeStep)
-    // IMPORTANT: For forecast products, TIME parameter is crucial.
-    const timeParam = this.selectedTime || this.latestTimeStep;
+    // FIND NEAREST VALID TIME
+    // If selectedTime is synthetic (XX:30), find the closest time in validServerTimes (XX:00)
+    let timeParam = this.selectedTime || this.latestTimeStep;
+
+    if (this.selectedTime && this.validServerTimes.length > 0) {
+      const selected = new Date(this.selectedTime).getTime();
+      // Find closest
+      const closest = this.validServerTimes.reduce((prev, curr) => {
+        const prevDiff = Math.abs(new Date(prev).getTime() - selected);
+        const currDiff = Math.abs(new Date(curr).getTime() - selected);
+        return currDiff < prevDiff ? curr : prev;
+      });
+      timeParam = closest;
+    }
 
     const ts = Math.floor(Date.now() / 1000).toString();
     const sig = this.signRequest(this.key, ts);
@@ -202,6 +250,10 @@ export class GrapicalmapComponent implements OnInit {
       `&CRS=EPSG:3857&LAYERS=${this.latestTimeStep}` +
       `&WIDTH=256&HEIGHT=256&FORMAT=image/png&TRANSPARENT=true` +
       `&TIME=${timeParam}&ts=${ts}&sig=${sig}`;
+
+    console.log('🗺️ WMS Layer URL:', url);
+    console.log('📦 Product Code:', currentProduct);
+    console.log('⌚ Time Parameter:', timeParam);
 
     // Remove existing layer if adding a new one to update time
     if (this.wmsLayer) {
@@ -222,69 +274,92 @@ export class GrapicalmapComponent implements OnInit {
   /* ---------------- CUSTOM LEGEND ---------------- */
 
   private updateDisplayedLegend(): void {
-    if (this.productCode === 'gfs-windspeed-mph-10meter' && this.windSpeedLegend.length > 0) {
-      // Show only key values for better readability
-      const keyValues = [0, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 220, 240, 255];
-      this.displayedLegend = this.windSpeedLegend.filter(entry => {
-        const speed = parseInt(entry.value.replace(' mph', ''));
-        return keyValues.includes(speed);
-      });
+    this.displayedLegend = [];
+    this.legendTitle = '';
 
-      // default to collapsed values for now as we might use them for labels next to gradient
+    if (this.productCode === 'gfs-windspeed-mph-10meter' && this.windSpeedLegend.length > 0) {
+      this.legendTitle = 'mph';
       const collapsedValues = [0, 10, 20, 30, 50, 70, 100, 150, 200, 255];
       this.displayedLegend = this.windSpeedLegend.filter(entry => {
-        const speed = parseInt(entry.value.replace(' mph', ''));
-        return collapsedValues.includes(speed);
+        return collapsedValues.includes(entry.speed);
       });
-    } else {
-      this.displayedLegend = [];
+    } else if (this.productCode === 'gfs-temp-f-2meter' && this.temperatureLegend.length > 0) {
+      this.legendTitle = this.selectedTemperatureUnit === 'C' ? '°C' : '°F';
+
+      // Always filter using Fahrenheit values
+      const keyTempsF = [-120, -100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100, 120, 130];
+
+      this.displayedLegend = this.temperatureLegend
+        .filter(entry => keyTempsF.includes(entry.temperature))
+        .map(entry => {
+          if (this.selectedTemperatureUnit === 'C') {
+            const celsiusTemp = this.fahrenheitToCelsius(entry.temperature);
+            return {
+              ...entry,
+              value: `${celsiusTemp} °C`
+            };
+          }
+          return {
+            ...entry,
+            value: `${entry.temperature} °F`
+          };
+        });
     }
   }
 
+
+
   get gradientStyle(): string {
-    if (!this.windSpeedLegend || this.windSpeedLegend.length === 0) return '';
-    // Create a linear gradient string from bottom to top
-    // entries are usually in order of value.
-    // We want the gradient to match the values.
-    // valid entries have color and value.
-    const stops = this.windSpeedLegend.map((entry, index) => {
-      // Distribute stops evenly or based on value?
-      // For simplicity and to match the visual of "equal steps", we can distribute evenly.
-      // Or we can try to respect the value scale. Wind speed is non-linear in visualization often,
-      // but here the legend entries provided seem to be the discrete steps.
-      // Let's just create a stop for each color.
+      let legendData: (WindLegendEntry | TemperatureLegendEntry)[] = [];
+      if (this.productCode === 'gfs-windspeed-mph-10meter') {
+        legendData = this.windSpeedLegend;
+      } else if (this.productCode === 'gfs-temp-f-2meter') {
+        legendData = this.temperatureLegend;
+      }
 
-      // If we want a smooth gradient, we just list colors.
-      // If we want discrete blocks like the original but "continuous looking", we can use hard stops.
+      if (!legendData || legendData.length === 0) return '';
 
-      // The request is "vertical gradient bar".
-      return entry.color;
-    });
+      const stops = legendData.map(entry => entry.color);
+      return `linear-gradient(to top, ${stops.join(', ')})`;
+    }
 
-    return `linear-gradient(to top, ${stops.join(', ')})`;
-  }
 
   /* ---------------- TIMELINE & DATE HELPERS ---------------- */
 
   // Filter times for the currently selected date
   get currentDayTimes(): string[] {
-    if (!this.selectedDate) return [];
-    return this.forecastTimes.filter(time => time.startsWith(this.selectedDate));
-  }
+      if (!this.selectedDate) return [];
+      return this.forecastTimes.filter(time => time.startsWith(this.selectedDate));
+    }
 
   // Current index within the filtered day list
   get currentIndex(): number {
-    return this.currentDayTimes.indexOf(this.selectedTime);
-  }
+      return this.currentDayTimes.indexOf(this.selectedTime);
+    }
 
   // Global index for navigation
   get globalIndex(): number {
-    return this.forecastTimes.indexOf(this.selectedTime);
-  }
+      return this.forecastTimes.indexOf(this.selectedTime);
+    }
 
-  selectNextTime(): void {
-    const nextIndex = this.globalIndex + 1;
-    if (nextIndex < this.forecastTimes.length) {
+  // Calculate percentage position for current real-time indicator on timeline
+  get currentTimePosition(): number {
+      if (this.currentDayTimes.length < 2) return 0;
+
+      const now = new Date().getTime();
+      const start = new Date(this.currentDayTimes[0]).getTime();
+      const end = new Date(this.currentDayTimes[this.currentDayTimes.length - 1]).getTime();
+
+      // Check if "now" is within range of the current day being viewed
+      if (now < start) return 0;
+      if (now > end) return 100;
+
+      return ((now - start) / (end - start)) * 100;
+    }
+
+    selectNextTime(): void {
+      const nextIndex = this.globalIndex + 1;
+      if(nextIndex <this.forecastTimes.length) {
       this.selectedTime = this.forecastTimes[nextIndex];
       this.syncSelectedDate();
       this.addWmsLayer();
@@ -303,11 +378,12 @@ export class GrapicalmapComponent implements OnInit {
   formatTickTime(timeStr: string): string {
     if (!timeStr) return '';
     const date = new Date(timeStr);
-    let hours = date.getHours();
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    return hours + ' ' + ampm;
+    // Get UTC hours for display
+    const utcHours = date.getUTCHours();
+    const paddedHours = utcHours.toString().padStart(2, '0');
+    const paddedMinutes = date.getUTCMinutes().toString().padStart(2, '0');
+    console.log(`⏰ UTC Time: ${paddedHours}:${paddedMinutes}Z`);
+    return paddedHours + ':' + paddedMinutes + 'Z';
   }
 
   onTimelineInput(event: Event): void {
@@ -322,7 +398,39 @@ export class GrapicalmapComponent implements OnInit {
     }
   }
 
-  toggleCalendar(): void {
+  onTimelineHover(event: MouseEvent): void {
+    const slider = event.target as HTMLInputElement;
+    if (!slider || this.currentDayTimes.length === 0) return;
+
+    const rect = slider.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const width = rect.width;
+    const percentage = Math.max(0, Math.min(100, (x / width) * 100));
+
+    // Calculate which index this corresponds to
+    const index = Math.round((percentage / 100) * (this.currentDayTimes.length - 1));
+
+    if (index >= 0 && index < this.currentDayTimes.length) {
+      const hoverTimeStr = this.currentDayTimes[index];
+      const date = new Date(hoverTimeStr);
+      const utcHours = date.getUTCHours();
+      const utcMinutes = date.getUTCMinutes();
+      const utcDate = date.getUTCDate();
+      const utcMonth = (date.getUTCMonth() + 1).toString().padStart(2, '0');
+
+      this.hoverTime = `${utcDate.toString().padStart(2, '0')}/${utcMonth} ${utcHours.toString().padStart(2, '0')}:${utcMinutes.toString().padStart(2, '0')}Z`;
+      this.hoverPosition = percentage;
+    }
+  }
+
+  onTimelineHoverEnd(): void {
+    this.isHoveringTimeline = false;
+    this.hoverTime = '';
+  }
+
+  onTimelineHoverStart(): void {
+    this.isHoveringTimeline = true;
+  } toggleCalendar(): void {
     this.showCalendar = !this.showCalendar;
   }
 
@@ -353,8 +461,10 @@ export class GrapicalmapComponent implements OnInit {
   /* ---------------- LOAD LEGEND JSON ---------------- */
 
   private loadWindSpeedLegend(): void {
+    const legendUrl = 'Wind Speed Near Surface/Wind Speed Near Surface.json';
+    console.log('📊 Loading Wind Speed Legend from:', legendUrl);
     this.http
-      .get<any>('Wind Speed Near Surface/Wind Speed Near Surface.json')
+      .get<any>(legendUrl)
       .subscribe(res => {
         if (res.palettes && res.palettes[0] && res.palettes[0].entries) {
           this.windSpeedLegend = res.palettes[0].entries.map((entry: any) => ({
@@ -362,10 +472,27 @@ export class GrapicalmapComponent implements OnInit {
             value: entry.value,
             speed: parseInt(entry.value.replace(' mph', ''))
           }));
+          console.log('✅ Wind Speed Legend loaded successfully');
           this.updateDisplayedLegend();
         }
       });
   }
+  private loadTemperatureLegend(): void {
+    const legendUrl = 'Temperature/Temperature.json';
+    console.log('📊 Loading Temperature Legend from:', legendUrl);
+    this.http.get<any>(legendUrl).subscribe(res => {
+      if (res.palettes && res.palettes[0] && res.palettes[0].entries) {
+        this.temperatureLegend = res.palettes[0].entries.map((entry: any) => ({
+          color: entry.color,
+          value: entry.value,
+          temperature: parseInt(entry.value.replace(' °F', ''), 10)
+        }));
+        console.log('✅ Temperature Legend loaded successfully');
+        this.updateDisplayedLegend();
+      }
+    });
+  }
+
 
   /* ---------------- TIME STEPS ---------------- */
 
@@ -378,6 +505,8 @@ export class GrapicalmapComponent implements OnInit {
     const url = `${this.wmsBaseUrl}/${this.key}/meta/tiles/product-instances/${currentProduct}/${this.configurationCode}.json` +
       `?ts=${ts}&sig=${sig}`;
 
+    console.log('⏱️ Fetching Available TimeSteps from:', url);
+
     try {
       const res: any[] = await this.http.get<any[]>(url).toPromise() || [];
 
@@ -385,16 +514,46 @@ export class GrapicalmapComponent implements OnInit {
         const latestInstance = res[0];
         this.latestTimeStep = latestInstance.time;
 
-        if (latestInstance.valid_times && Array.isArray(latestInstance.valid_times)) {
-          // efficient way to reverse-chronological -> chronological
-          this.forecastTimes = [...latestInstance.valid_times].reverse();
+        if (latestInstance.valid_times && Array.isArray(latestInstance.valid_times) && latestInstance.valid_times.length > 0) {
+          // Flatten standard times first
+          const standardTimes = [...latestInstance.valid_times].reverse();
+          this.validServerTimes = standardTimes; // Store raw valid times
+
+          // Generate 30-minute intervals between start and end of forecast
+          // Assuming timestamps are sortable strings (ISO)
+          if (standardTimes.length >= 2) {
+            const startTime = standardTimes[0];
+            const endTime = standardTimes[standardTimes.length - 1];
+            this.forecastTimes = this.generate30MinIntervals(startTime, endTime);
+          } else {
+            this.forecastTimes = standardTimes;
+          }
 
           // Extract unique dates
           const dates = new Set(this.forecastTimes.map(t => t.split('T')[0]));
           this.uniqueDates = Array.from(dates);
 
           if (this.forecastTimes.length > 0) {
-            this.selectedTime = this.forecastTimes[0];
+            // Default to current time rounded down to nearest 30 min
+            const now = new Date();
+            // Round down minutes to 0 or 30
+            const minutes = now.getMinutes() >= 30 ? 30 : 0;
+            now.setMinutes(minutes, 0, 0); // Seconds and ms to 0
+
+            // Find closest matching time in forecastTimes
+            const nowTime = now.getTime();
+            let closestTime = this.forecastTimes[0];
+            let minDiff = Infinity;
+
+            for (const t of this.forecastTimes) {
+              const diff = Math.abs(new Date(t).getTime() - nowTime);
+              if (diff < minDiff) {
+                minDiff = diff;
+                closestTime = t;
+              }
+            }
+
+            this.selectedTime = closestTime;
             this.syncSelectedDate();
           }
         } else {
@@ -407,6 +566,20 @@ export class GrapicalmapComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching time steps:', error);
     }
+  }
+
+  private generate30MinIntervals(startStr: string, endStr: string): string[] {
+    const start = new Date(startStr);
+    const end = new Date(endStr);
+    const times = [];
+    const current = new Date(start);
+
+    while (current <= end) {
+      times.push(current.toISOString());
+      // Add 30 minutes
+      current.setMinutes(current.getMinutes() + 30);
+    }
+    return times;
   }
 
   /* ---------------- SIGNATURE ---------------- */

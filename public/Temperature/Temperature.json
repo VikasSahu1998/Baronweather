@@ -1,0 +1,1032 @@
+{
+    "palettes": [
+        {
+            "entries": [
+                {
+                    "color": "#000080ff",
+                    "value": "-120 \u00b0F"
+                },
+                {
+                    "color": "#0c0080ff",
+                    "value": "-119 \u00b0F"
+                },
+                {
+                    "color": "#190080ff",
+                    "value": "-118 \u00b0F"
+                },
+                {
+                    "color": "#260080ff",
+                    "value": "-117 \u00b0F"
+                },
+                {
+                    "color": "#330080ff",
+                    "value": "-116 \u00b0F"
+                },
+                {
+                    "color": "#400080ff",
+                    "value": "-115 \u00b0F"
+                },
+                {
+                    "color": "#4c0080ff",
+                    "value": "-114 \u00b0F"
+                },
+                {
+                    "color": "#590080ff",
+                    "value": "-113 \u00b0F"
+                },
+                {
+                    "color": "#660080ff",
+                    "value": "-112 \u00b0F"
+                },
+                {
+                    "color": "#730080ff",
+                    "value": "-111 \u00b0F"
+                },
+                {
+                    "color": "#7f0080ff",
+                    "value": "-110 \u00b0F"
+                },
+                {
+                    "color": "#89008aff",
+                    "value": "-109 \u00b0F"
+                },
+                {
+                    "color": "#940095ff",
+                    "value": "-108 \u00b0F"
+                },
+                {
+                    "color": "#9f00a0ff",
+                    "value": "-107 \u00b0F"
+                },
+                {
+                    "color": "#aa00abff",
+                    "value": "-106 \u00b0F"
+                },
+                {
+                    "color": "#b500b6ff",
+                    "value": "-105 \u00b0F"
+                },
+                {
+                    "color": "#c000c0ff",
+                    "value": "-104 \u00b0F"
+                },
+                {
+                    "color": "#cb00cbff",
+                    "value": "-103 \u00b0F"
+                },
+                {
+                    "color": "#d600d6ff",
+                    "value": "-102 \u00b0F"
+                },
+                {
+                    "color": "#e100e1ff",
+                    "value": "-101 \u00b0F"
+                },
+                {
+                    "color": "#ec00ecff",
+                    "value": "-100 \u00b0F"
+                },
+                {
+                    "color": "#ed19edff",
+                    "value": "-99 \u00b0F"
+                },
+                {
+                    "color": "#ef33efff",
+                    "value": "-98 \u00b0F"
+                },
+                {
+                    "color": "#f14cf1ff",
+                    "value": "-97 \u00b0F"
+                },
+                {
+                    "color": "#f366f3ff",
+                    "value": "-96 \u00b0F"
+                },
+                {
+                    "color": "#f57ff5ff",
+                    "value": "-95 \u00b0F"
+                },
+                {
+                    "color": "#f799f7ff",
+                    "value": "-94 \u00b0F"
+                },
+                {
+                    "color": "#f9b2f9ff",
+                    "value": "-93 \u00b0F"
+                },
+                {
+                    "color": "#fbccfbff",
+                    "value": "-92 \u00b0F"
+                },
+                {
+                    "color": "#fde5fdff",
+                    "value": "-91 \u00b0F"
+                },
+                {
+                    "color": "#ffffffff",
+                    "value": "-90 \u00b0F"
+                },
+                {
+                    "color": "#f2ffffff",
+                    "value": "-89 \u00b0F"
+                },
+                {
+                    "color": "#e5ffffff",
+                    "value": "-88 \u00b0F"
+                },
+                {
+                    "color": "#d8ffffff",
+                    "value": "-87 \u00b0F"
+                },
+                {
+                    "color": "#ccffffff",
+                    "value": "-86 \u00b0F"
+                },
+                {
+                    "color": "#bfffffff",
+                    "value": "-85 \u00b0F"
+                },
+                {
+                    "color": "#b2ffffff",
+                    "value": "-84 \u00b0F"
+                },
+                {
+                    "color": "#a5ffffff",
+                    "value": "-83 \u00b0F"
+                },
+                {
+                    "color": "#99ffffff",
+                    "value": "-82 \u00b0F"
+                },
+                {
+                    "color": "#8cffffff",
+                    "value": "-81 \u00b0F"
+                },
+                {
+                    "color": "#7fffffff",
+                    "value": "-80 \u00b0F"
+                },
+                {
+                    "color": "#72ffffff",
+                    "value": "-79 \u00b0F"
+                },
+                {
+                    "color": "#66ffffff",
+                    "value": "-78 \u00b0F"
+                },
+                {
+                    "color": "#59ffffff",
+                    "value": "-77 \u00b0F"
+                },
+                {
+                    "color": "#4cffffff",
+                    "value": "-76 \u00b0F"
+                },
+                {
+                    "color": "#3fffffff",
+                    "value": "-75 \u00b0F"
+                },
+                {
+                    "color": "#33ffffff",
+                    "value": "-74 \u00b0F"
+                },
+                {
+                    "color": "#26ffffff",
+                    "value": "-73 \u00b0F"
+                },
+                {
+                    "color": "#19ffffff",
+                    "value": "-72 \u00b0F"
+                },
+                {
+                    "color": "#0cffffff",
+                    "value": "-71 \u00b0F"
+                },
+                {
+                    "color": "#00ffffff",
+                    "value": "-70 \u00b0F"
+                },
+                {
+                    "color": "#00e5ffff",
+                    "value": "-69 \u00b0F"
+                },
+                {
+                    "color": "#00ccffff",
+                    "value": "-68 \u00b0F"
+                },
+                {
+                    "color": "#00b2ffff",
+                    "value": "-67 \u00b0F"
+                },
+                {
+                    "color": "#0099ffff",
+                    "value": "-66 \u00b0F"
+                },
+                {
+                    "color": "#007fffff",
+                    "value": "-65 \u00b0F"
+                },
+                {
+                    "color": "#0066ffff",
+                    "value": "-64 \u00b0F"
+                },
+                {
+                    "color": "#004cffff",
+                    "value": "-63 \u00b0F"
+                },
+                {
+                    "color": "#0033ffff",
+                    "value": "-62 \u00b0F"
+                },
+                {
+                    "color": "#0019ffff",
+                    "value": "-61 \u00b0F"
+                },
+                {
+                    "color": "#0000ffff",
+                    "value": "-60 \u00b0F"
+                },
+                {
+                    "color": "#0000f5ff",
+                    "value": "-59 \u00b0F"
+                },
+                {
+                    "color": "#0000ebff",
+                    "value": "-58 \u00b0F"
+                },
+                {
+                    "color": "#0000e1ff",
+                    "value": "-57 \u00b0F"
+                },
+                {
+                    "color": "#0000d7ff",
+                    "value": "-56 \u00b0F"
+                },
+                {
+                    "color": "#0000cdff",
+                    "value": "-55 \u00b0F"
+                },
+                {
+                    "color": "#0000c3ff",
+                    "value": "-54 \u00b0F"
+                },
+                {
+                    "color": "#0000b9ff",
+                    "value": "-53 \u00b0F"
+                },
+                {
+                    "color": "#0000afff",
+                    "value": "-52 \u00b0F"
+                },
+                {
+                    "color": "#0000a5ff",
+                    "value": "-51 \u00b0F"
+                },
+                {
+                    "color": "#000080ff",
+                    "value": "-50 \u00b0F"
+                },
+                {
+                    "color": "#19198cff",
+                    "value": "-49 \u00b0F"
+                },
+                {
+                    "color": "#333399ff",
+                    "value": "-48 \u00b0F"
+                },
+                {
+                    "color": "#4c4ca6ff",
+                    "value": "-47 \u00b0F"
+                },
+                {
+                    "color": "#6666b2ff",
+                    "value": "-46 \u00b0F"
+                },
+                {
+                    "color": "#7f7fbfff",
+                    "value": "-45 \u00b0F"
+                },
+                {
+                    "color": "#9999ccff",
+                    "value": "-44 \u00b0F"
+                },
+                {
+                    "color": "#b2b2d8ff",
+                    "value": "-43 \u00b0F"
+                },
+                {
+                    "color": "#cccce5ff",
+                    "value": "-42 \u00b0F"
+                },
+                {
+                    "color": "#e5e5f2ff",
+                    "value": "-41 \u00b0F"
+                },
+                {
+                    "color": "#fffffeff",
+                    "value": "-40 \u00b0F"
+                },
+                {
+                    "color": "#ebe5ebff",
+                    "value": "-39 \u00b0F"
+                },
+                {
+                    "color": "#d8ccd8ff",
+                    "value": "-38 \u00b0F"
+                },
+                {
+                    "color": "#c5b2c5ff",
+                    "value": "-37 \u00b0F"
+                },
+                {
+                    "color": "#b299b2ff",
+                    "value": "-36 \u00b0F"
+                },
+                {
+                    "color": "#9f7f9fff",
+                    "value": "-35 \u00b0F"
+                },
+                {
+                    "color": "#8c668cff",
+                    "value": "-34 \u00b0F"
+                },
+                {
+                    "color": "#794c79ff",
+                    "value": "-33 \u00b0F"
+                },
+                {
+                    "color": "#663366ff",
+                    "value": "-32 \u00b0F"
+                },
+                {
+                    "color": "#531953ff",
+                    "value": "-31 \u00b0F"
+                },
+                {
+                    "color": "#400040ff",
+                    "value": "-30 \u00b0F"
+                },
+                {
+                    "color": "#490049ff",
+                    "value": "-29 \u00b0F"
+                },
+                {
+                    "color": "#530053ff",
+                    "value": "-28 \u00b0F"
+                },
+                {
+                    "color": "#5c005cff",
+                    "value": "-27 \u00b0F"
+                },
+                {
+                    "color": "#660066ff",
+                    "value": "-26 \u00b0F"
+                },
+                {
+                    "color": "#6f006fff",
+                    "value": "-25 \u00b0F"
+                },
+                {
+                    "color": "#790079ff",
+                    "value": "-24 \u00b0F"
+                },
+                {
+                    "color": "#820082ff",
+                    "value": "-23 \u00b0F"
+                },
+                {
+                    "color": "#8c008cff",
+                    "value": "-22 \u00b0F"
+                },
+                {
+                    "color": "#950095ff",
+                    "value": "-21 \u00b0F"
+                },
+                {
+                    "color": "#9f009fff",
+                    "value": "-20 \u00b0F"
+                },
+                {
+                    "color": "#a900a9ff",
+                    "value": "-19 \u00b0F"
+                },
+                {
+                    "color": "#b200b2ff",
+                    "value": "-18 \u00b0F"
+                },
+                {
+                    "color": "#bc00bcff",
+                    "value": "-17 \u00b0F"
+                },
+                {
+                    "color": "#c500c5ff",
+                    "value": "-16 \u00b0F"
+                },
+                {
+                    "color": "#cf00cfff",
+                    "value": "-15 \u00b0F"
+                },
+                {
+                    "color": "#d800d8ff",
+                    "value": "-14 \u00b0F"
+                },
+                {
+                    "color": "#e200e2ff",
+                    "value": "-13 \u00b0F"
+                },
+                {
+                    "color": "#eb00ebff",
+                    "value": "-12 \u00b0F"
+                },
+                {
+                    "color": "#f500f5ff",
+                    "value": "-11 \u00b0F"
+                },
+                {
+                    "color": "#ff00ffff",
+                    "value": "-10 \u00b0F"
+                },
+                {
+                    "color": "#ff19ffff",
+                    "value": "-9 \u00b0F"
+                },
+                {
+                    "color": "#ff33ffff",
+                    "value": "-8 \u00b0F"
+                },
+                {
+                    "color": "#ff4cffff",
+                    "value": "-7 \u00b0F"
+                },
+                {
+                    "color": "#ff66ffff",
+                    "value": "-6 \u00b0F"
+                },
+                {
+                    "color": "#ff7fffff",
+                    "value": "-5 \u00b0F"
+                },
+                {
+                    "color": "#ff99ffff",
+                    "value": "-4 \u00b0F"
+                },
+                {
+                    "color": "#ffb2ffff",
+                    "value": "-3 \u00b0F"
+                },
+                {
+                    "color": "#ffccffff",
+                    "value": "-2 \u00b0F"
+                },
+                {
+                    "color": "#ffe5ffff",
+                    "value": "-1 \u00b0F"
+                },
+                {
+                    "color": "#ffffffff",
+                    "value": "0 \u00b0F"
+                },
+                {
+                    "color": "#f2ffffff",
+                    "value": "1 \u00b0F"
+                },
+                {
+                    "color": "#e5ffffff",
+                    "value": "2 \u00b0F"
+                },
+                {
+                    "color": "#d8ffffff",
+                    "value": "3 \u00b0F"
+                },
+                {
+                    "color": "#ccffffff",
+                    "value": "4 \u00b0F"
+                },
+                {
+                    "color": "#bfffffff",
+                    "value": "5 \u00b0F"
+                },
+                {
+                    "color": "#b2ffffff",
+                    "value": "6 \u00b0F"
+                },
+                {
+                    "color": "#a6ffffff",
+                    "value": "7 \u00b0F"
+                },
+                {
+                    "color": "#99ffffff",
+                    "value": "8 \u00b0F"
+                },
+                {
+                    "color": "#8cffffff",
+                    "value": "9 \u00b0F"
+                },
+                {
+                    "color": "#80ffffff",
+                    "value": "10 \u00b0F"
+                },
+                {
+                    "color": "#72fffeff",
+                    "value": "11 \u00b0F"
+                },
+                {
+                    "color": "#66fffeff",
+                    "value": "12 \u00b0F"
+                },
+                {
+                    "color": "#59fffeff",
+                    "value": "13 \u00b0F"
+                },
+                {
+                    "color": "#4cfffeff",
+                    "value": "14 \u00b0F"
+                },
+                {
+                    "color": "#3ffffeff",
+                    "value": "15 \u00b0F"
+                },
+                {
+                    "color": "#33fffeff",
+                    "value": "16 \u00b0F"
+                },
+                {
+                    "color": "#26fffeff",
+                    "value": "17 \u00b0F"
+                },
+                {
+                    "color": "#19fffeff",
+                    "value": "18 \u00b0F"
+                },
+                {
+                    "color": "#0cfffeff",
+                    "value": "19 \u00b0F"
+                },
+                {
+                    "color": "#00ffffff",
+                    "value": "20 \u00b0F"
+                },
+                {
+                    "color": "#04e9feff",
+                    "value": "21 \u00b0F"
+                },
+                {
+                    "color": "#08d4feff",
+                    "value": "22 \u00b0F"
+                },
+                {
+                    "color": "#0cbffeff",
+                    "value": "23 \u00b0F"
+                },
+                {
+                    "color": "#10aafeff",
+                    "value": "24 \u00b0F"
+                },
+                {
+                    "color": "#1595feff",
+                    "value": "25 \u00b0F"
+                },
+                {
+                    "color": "#197ffeff",
+                    "value": "26 \u00b0F"
+                },
+                {
+                    "color": "#1d6afeff",
+                    "value": "27 \u00b0F"
+                },
+                {
+                    "color": "#2155feff",
+                    "value": "28 \u00b0F"
+                },
+                {
+                    "color": "#2540feff",
+                    "value": "29 \u00b0F"
+                },
+                {
+                    "color": "#2a2bfeff",
+                    "value": "30 \u00b0F"
+                },
+                {
+                    "color": "#2526f1ff",
+                    "value": "31 \u00b0F"
+                },
+                {
+                    "color": "#2122e4ff",
+                    "value": "32 \u00b0F"
+                },
+                {
+                    "color": "#1d1ed8ff",
+                    "value": "33 \u00b0F"
+                },
+                {
+                    "color": "#1919cbff",
+                    "value": "34 \u00b0F"
+                },
+                {
+                    "color": "#1415bfff",
+                    "value": "35 \u00b0F"
+                },
+                {
+                    "color": "#1011b2ff",
+                    "value": "36 \u00b0F"
+                },
+                {
+                    "color": "#0c0ca5ff",
+                    "value": "37 \u00b0F"
+                },
+                {
+                    "color": "#080899ff",
+                    "value": "38 \u00b0F"
+                },
+                {
+                    "color": "#04048cff",
+                    "value": "39 \u00b0F"
+                },
+                {
+                    "color": "#000080ff",
+                    "value": "40 \u00b0F"
+                },
+                {
+                    "color": "#000c73ff",
+                    "value": "41 \u00b0F"
+                },
+                {
+                    "color": "#001966ff",
+                    "value": "42 \u00b0F"
+                },
+                {
+                    "color": "#002659ff",
+                    "value": "43 \u00b0F"
+                },
+                {
+                    "color": "#00334cff",
+                    "value": "44 \u00b0F"
+                },
+                {
+                    "color": "#004040ff",
+                    "value": "45 \u00b0F"
+                },
+                {
+                    "color": "#004c33ff",
+                    "value": "46 \u00b0F"
+                },
+                {
+                    "color": "#005926ff",
+                    "value": "47 \u00b0F"
+                },
+                {
+                    "color": "#006619ff",
+                    "value": "48 \u00b0F"
+                },
+                {
+                    "color": "#00730cff",
+                    "value": "49 \u00b0F"
+                },
+                {
+                    "color": "#007f00ff",
+                    "value": "50 \u00b0F"
+                },
+                {
+                    "color": "#198b00ff",
+                    "value": "51 \u00b0F"
+                },
+                {
+                    "color": "#339800ff",
+                    "value": "52 \u00b0F"
+                },
+                {
+                    "color": "#4ca500ff",
+                    "value": "53 \u00b0F"
+                },
+                {
+                    "color": "#66b200ff",
+                    "value": "54 \u00b0F"
+                },
+                {
+                    "color": "#7fbf00ff",
+                    "value": "55 \u00b0F"
+                },
+                {
+                    "color": "#99cb00ff",
+                    "value": "56 \u00b0F"
+                },
+                {
+                    "color": "#b2d800ff",
+                    "value": "57 \u00b0F"
+                },
+                {
+                    "color": "#cce500ff",
+                    "value": "58 \u00b0F"
+                },
+                {
+                    "color": "#e5f200ff",
+                    "value": "59 \u00b0F"
+                },
+                {
+                    "color": "#ffff00ff",
+                    "value": "60 \u00b0F"
+                },
+                {
+                    "color": "#fdf801ff",
+                    "value": "61 \u00b0F"
+                },
+                {
+                    "color": "#fbf102ff",
+                    "value": "62 \u00b0F"
+                },
+                {
+                    "color": "#faea03ff",
+                    "value": "63 \u00b0F"
+                },
+                {
+                    "color": "#f8e304ff",
+                    "value": "64 \u00b0F"
+                },
+                {
+                    "color": "#f7dc05ff",
+                    "value": "65 \u00b0F"
+                },
+                {
+                    "color": "#f5d606ff",
+                    "value": "66 \u00b0F"
+                },
+                {
+                    "color": "#f3cf07ff",
+                    "value": "67 \u00b0F"
+                },
+                {
+                    "color": "#f2c808ff",
+                    "value": "68 \u00b0F"
+                },
+                {
+                    "color": "#f0c109ff",
+                    "value": "69 \u00b0F"
+                },
+                {
+                    "color": "#efba0aff",
+                    "value": "70 \u00b0F"
+                },
+                {
+                    "color": "#f0b409ff",
+                    "value": "71 \u00b0F"
+                },
+                {
+                    "color": "#f2ae08ff",
+                    "value": "72 \u00b0F"
+                },
+                {
+                    "color": "#f3a807ff",
+                    "value": "73 \u00b0F"
+                },
+                {
+                    "color": "#f5a206ff",
+                    "value": "74 \u00b0F"
+                },
+                {
+                    "color": "#f69c05ff",
+                    "value": "75 \u00b0F"
+                },
+                {
+                    "color": "#f89704ff",
+                    "value": "76 \u00b0F"
+                },
+                {
+                    "color": "#fa9103ff",
+                    "value": "77 \u00b0F"
+                },
+                {
+                    "color": "#fb8b02ff",
+                    "value": "78 \u00b0F"
+                },
+                {
+                    "color": "#fd8501ff",
+                    "value": "79 \u00b0F"
+                },
+                {
+                    "color": "#fe7f00ff",
+                    "value": "80 \u00b0F"
+                },
+                {
+                    "color": "#fe7200ff",
+                    "value": "81 \u00b0F"
+                },
+                {
+                    "color": "#fe6500ff",
+                    "value": "82 \u00b0F"
+                },
+                {
+                    "color": "#fe5800ff",
+                    "value": "83 \u00b0F"
+                },
+                {
+                    "color": "#fe4c00ff",
+                    "value": "84 \u00b0F"
+                },
+                {
+                    "color": "#fe3f00ff",
+                    "value": "85 \u00b0F"
+                },
+                {
+                    "color": "#fe3200ff",
+                    "value": "86 \u00b0F"
+                },
+                {
+                    "color": "#fe2600ff",
+                    "value": "87 \u00b0F"
+                },
+                {
+                    "color": "#fe1900ff",
+                    "value": "88 \u00b0F"
+                },
+                {
+                    "color": "#fe0c00ff",
+                    "value": "89 \u00b0F"
+                },
+                {
+                    "color": "#fe0000ff",
+                    "value": "90 \u00b0F"
+                },
+                {
+                    "color": "#f10000ff",
+                    "value": "91 \u00b0F"
+                },
+                {
+                    "color": "#e40000ff",
+                    "value": "92 \u00b0F"
+                },
+                {
+                    "color": "#d80000ff",
+                    "value": "93 \u00b0F"
+                },
+                {
+                    "color": "#cb0000ff",
+                    "value": "94 \u00b0F"
+                },
+                {
+                    "color": "#bf0000ff",
+                    "value": "95 \u00b0F"
+                },
+                {
+                    "color": "#b20000ff",
+                    "value": "96 \u00b0F"
+                },
+                {
+                    "color": "#a50000ff",
+                    "value": "97 \u00b0F"
+                },
+                {
+                    "color": "#990000ff",
+                    "value": "98 \u00b0F"
+                },
+                {
+                    "color": "#8c0000ff",
+                    "value": "99 \u00b0F"
+                },
+                {
+                    "color": "#800000ff",
+                    "value": "100 \u00b0F"
+                },
+                {
+                    "color": "#8c1919ff",
+                    "value": "101 \u00b0F"
+                },
+                {
+                    "color": "#993333ff",
+                    "value": "102 \u00b0F"
+                },
+                {
+                    "color": "#a64c4cff",
+                    "value": "103 \u00b0F"
+                },
+                {
+                    "color": "#b26666ff",
+                    "value": "104 \u00b0F"
+                },
+                {
+                    "color": "#bf7f7fff",
+                    "value": "105 \u00b0F"
+                },
+                {
+                    "color": "#cc9999ff",
+                    "value": "106 \u00b0F"
+                },
+                {
+                    "color": "#d8b2b2ff",
+                    "value": "107 \u00b0F"
+                },
+                {
+                    "color": "#e5ccccff",
+                    "value": "108 \u00b0F"
+                },
+                {
+                    "color": "#f2e5e5ff",
+                    "value": "109 \u00b0F"
+                },
+                {
+                    "color": "#feffffff",
+                    "value": "110 \u00b0F"
+                },
+                {
+                    "color": "#fee5ffff",
+                    "value": "111 \u00b0F"
+                },
+                {
+                    "color": "#feccffff",
+                    "value": "112 \u00b0F"
+                },
+                {
+                    "color": "#feb2ffff",
+                    "value": "113 \u00b0F"
+                },
+                {
+                    "color": "#fe99ffff",
+                    "value": "114 \u00b0F"
+                },
+                {
+                    "color": "#fe7fffff",
+                    "value": "115 \u00b0F"
+                },
+                {
+                    "color": "#fe66ffff",
+                    "value": "116 \u00b0F"
+                },
+                {
+                    "color": "#fe4cffff",
+                    "value": "117 \u00b0F"
+                },
+                {
+                    "color": "#fe33ffff",
+                    "value": "118 \u00b0F"
+                },
+                {
+                    "color": "#fe19ffff",
+                    "value": "119 \u00b0F"
+                },
+                {
+                    "color": "#fe00ffff",
+                    "value": "120 \u00b0F"
+                },
+                {
+                    "color": "#f400f0ff",
+                    "value": "121 \u00b0F"
+                },
+                {
+                    "color": "#ea00e1ff",
+                    "value": "122 \u00b0F"
+                },
+                {
+                    "color": "#e000d2ff",
+                    "value": "123 \u00b0F"
+                },
+                {
+                    "color": "#d700c4ff",
+                    "value": "124 \u00b0F"
+                },
+                {
+                    "color": "#cd00b5ff",
+                    "value": "125 \u00b0F"
+                },
+                {
+                    "color": "#c300a6ff",
+                    "value": "126 \u00b0F"
+                },
+                {
+                    "color": "#ba0098ff",
+                    "value": "127 \u00b0F"
+                },
+                {
+                    "color": "#b00089ff",
+                    "value": "128 \u00b0F"
+                },
+                {
+                    "color": "#a6007aff",
+                    "value": "129 \u00b0F"
+                },
+                {
+                    "color": "#9d006cff",
+                    "value": "130 \u00b0F"
+                },
+                {
+                    "color": "#93005dff",
+                    "value": "131 \u00b0F"
+                },
+                {
+                    "color": "#89004eff",
+                    "value": "132 \u00b0F"
+                },
+                {
+                    "color": "#800040ff",
+                    "value": "133 \u00b0F"
+                },
+                {
+                    "color": "#760031ff",
+                    "value": "134 \u00b0F"
+                },
+                {
+                    "color": "#6c0022ff",
+                    "value": "135 \u00b0F"
+                }
+            ]
+        }
+    ]
+}
